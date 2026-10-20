@@ -1,0 +1,70 @@
+/* ==========================================================================
+   Themes — light (ivory & sandstone) and dark (lamp-black & maroon).
+   Dark is designed separately: lamplit surfaces, muted gold, not an inversion.
+   ========================================================================== */
+:root,
+:root[data-theme='light'] {
+  color-scheme: light;
+  --bg: var(--c-ivory);
+  --bg-raised: var(--c-ivory-light);
+  --surface: var(--c-sandstone);
+  --surface-deep: var(--c-sandstone-deep);
+  --surface-contrast: var(--c-maroon);
+  --on-contrast: var(--c-ivory);
+  --text: #2a1f20;
+  --text-muted: #5f4638;
+  --heading: var(--c-maroon);
+  --accent: var(--c-gold);
+  --accent-strong: #7a5726; /* gold for text: AA (5:1) on ivory */
+  --ornament: var(--c-gold);
+  --ornament-soft: rgba(181, 138, 69, 0.42);
+  --ornament-faint: rgba(181, 138, 69, 0.16);
+  --line: rgba(128, 81, 59, 0.24);
+  --line-strong: rgba(128, 81, 59, 0.45);
+  --leaf: var(--c-leaf);
+  --focus: #6a2e3a;
+  --danger: #9b2c2c;
+  --success: #2e5a45;
+  --graphite: var(--c-graphite);
+  --bell-fill-1: #f2deb0;
+  --bell-fill-2: #c9a05a;
+  --bell-fill-3: #7d5a28;
+  --shadow-soft: 0 24px 60px -32px rgba(72, 28, 38, 0.45);
+  --shadow-card: 0 1px 0 rgba(255, 255, 255, 0.6) inset, 0 18px 40px -30px rgba(72, 28, 38, 0.5);
+  --paper-opacity: 0.55;
+  --photo-filter: none;
+  --header-bg: rgba(245, 235, 221, 0.9);
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: var(--c-lamp);
+  --bg-raised: var(--c-lamp-raised);
+  --surface: #2a1c20;
+  --surface-deep: #351f26;
+  --surface-contrast: #3a1620;
+  --on-contrast: var(--c-ivory);
+  --text: #ece0cf;
+  --text-muted: #c3ad96;
+  --heading: #f3e4cc;
+  --accent: #c49a58;
+  --accent-strong: #d7b77a;
+  --ornament: #a8834a;
+  --ornament-soft: rgba(196, 154, 88, 0.38);
+  --ornament-faint: rgba(196, 154, 88, 0.12);
+  --line: rgba(215, 183, 122, 0.16);
+  --line-strong: rgba(215, 183, 122, 0.32);
+  --leaf: #4f7564;
+  --focus: #e6c98f;
+  --danger: #f09a8f;
+  --success: #8fc6a8;
+  --graphite: #d9cbb8;
+  --bell-fill-1: #e9cf98;
+  --bell-fill-2: #a8834a;
+  --bell-fill-3: #4e3618;
+  --shadow-soft: 0 30px 70px -30px rgba(0, 0, 0, 0.75);
+  --shadow-card: 0 18px 40px -26px rgba(0, 0, 0, 0.8);
+  --paper-opacity: 0.18;
+  --photo-filter: brightness(0.94);
+  --header-bg: rgba(33, 26, 27, 0.88);
+}

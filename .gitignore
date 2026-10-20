@@ -100,3 +100,6 @@ venv/
 .venv/
 env/
 ENV/
+
+.env.example/
+vite.config.ts/

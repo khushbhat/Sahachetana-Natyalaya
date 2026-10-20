@@ -1,0 +1,94 @@
+/* ==========================================================================
+   Design tokens — Sahachetana Natyalaya (R.)
+   Brand palette, typography, spacing, layout. Theme-dependent colours live
+   in themes.css and reference these raw values.
+   ========================================================================== */
+:root {
+  /* Brand palette */
+  --c-maroon: #481c26;
+  --c-maroon-deep: #2f1018;
+  --c-maroon-soft: #6a2e3a;
+  --c-gold: #b58a45;
+  --c-gold-light: #d7b77a;
+  --c-gold-deep: #8a6530;
+  --c-ivory: #f5ebdd;
+  --c-ivory-light: #fbf5ec;
+  --c-sandstone: #ebdcc6;
+  --c-sandstone-deep: #dcc7a8;
+  --c-sandalwood: #80513b;
+  --c-leaf: #263a32;
+  --c-leaf-soft: #3c5a4d;
+  --c-lamp: #211a1b;
+  --c-lamp-raised: #2b2123;
+  --c-graphite: #3a3335;
+  --c-kemp: #9e2a33; /* temple-jewellery red stone, used sparingly inside ornaments */
+
+  /* Typography */
+  --font-display: 'Cormorant Garamond', 'Cormorant', Garamond, 'Times New Roman', serif;
+  --font-body: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-kannada: 'Noto Serif Kannada', 'Tunga', serif;
+
+  --fs-display: clamp(3rem, 1.6rem + 5.6vw, 6.4rem);
+  --fs-h1: clamp(2.6rem, 1.7rem + 3.6vw, 4.6rem);
+  --fs-h2: clamp(2rem, 1.4rem + 2.2vw, 3.2rem);
+  --fs-h3: clamp(1.5rem, 1.2rem + 1vw, 2.05rem);
+  --fs-h4: 1.3rem;
+  --fs-lead: clamp(1.12rem, 1rem + 0.4vw, 1.3rem);
+  --fs-body: 1.0625rem;
+  --fs-small: 0.92rem;
+  --fs-caption: 0.84rem;
+  --fs-label: 0.74rem;
+
+  --lh-tight: 1.05;
+  --lh-heading: 1.15;
+  --lh-body: 1.72;
+  --track-label: 0.24em;
+  --track-wide: 0.14em;
+  --measure: 64ch;
+
+  /* Spacing scale */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.5rem;
+  --sp-6: 2rem;
+  --sp-7: 3rem;
+  --sp-8: 4rem;
+  --sp-9: 6rem;
+  --sp-10: 8rem;
+  --section-y: clamp(4rem, 2.5rem + 6vw, 8rem);
+
+  /* Layout */
+  --w-content: 1240px;
+  --w-narrow: 760px;
+  --w-wide: 1400px;
+  --gutter: clamp(1rem, 0.4rem + 3vw, 3rem);
+  --thread-w: 0px; /* left anklet rail, set at >= 1024px */
+  --header-h: 76px;
+
+  /* Borders & radii — architecture is mostly square; radii are restrained */
+  --hairline: 1px;
+  --r-sm: 2px;
+  --r-md: 4px;
+  --r-pill: 999px;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 180ms;
+  --dur-med: 420ms;
+  --dur-slow: 900ms;
+
+  --z-thread: 30;
+  --z-header: 40;
+  --z-drawer: 60;
+  --z-modal: 80;
+  --z-intro: 100;
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --thread-w: 76px;
+  }
+}
