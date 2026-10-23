@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { NAV_ITEMS } from '../../data/navigation';
 import { CONTACT, SITE } from '../../config/site';
+import { venues } from '../../data/batches';
 import { Wordmark } from '../ornaments/Wordmark';
 import { Divider } from '../ornaments/Divider';
 import { Stellate } from '../ornaments/Hoysala';
@@ -19,8 +20,7 @@ export function Footer() {
             {SITE.nameKannada}
           </p>
           <p>
-            Classical Bharatanatyam training, performance, choreography and cultural curation — led by {SITE.leader}, with free classical
-            dance education for children who could not otherwise learn.
+            A Bharatanatyam academy in Shivamogga — classes, performance, choreography and the Natyaaradhana National Dance Festival — founded by {SITE.leader}.
           </p>
         </div>
 
@@ -51,7 +51,7 @@ export function Footer() {
             </li>
             <li>
               <span className="site-footer__k">Teaching</span>
-              Seven teaching locations across the week · {SITE.region}
+              {venues.length} venues across the week · <Link to="/classes">see the timetable</Link>
             </li>
           </ul>
         </div>
@@ -81,7 +81,7 @@ export function Footer() {
       <div className="site-footer__base">
         <div className="container site-footer__base-inner">
           <p>
-            © {new Date().getFullYear()} {SITE.name}. Typographic wordmark is a temporary treatment, not the official logo.
+            © {new Date().getFullYear()} {SITE.name}.
           </p>
           <Link to="/admin" className="site-footer__admin">
             Admin Login

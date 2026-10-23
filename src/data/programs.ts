@@ -5,11 +5,17 @@
 export type ProgramStatus = 'draft' | 'published';
 export type ProgramListing = 'upcoming' | 'past';
 
+import { photoUrl, photos } from './images';
+
 export type Program = {
   id: string;
   title: string;
   /** ISO date-time string, or '' when not yet announced */
   dateTime: string;
+  /** Optional last day (YYYY-MM-DD) for multi-day programs; the program moves to Past after it */
+  endDate?: string;
+  /** Shown instead of the formatted date, e.g. '3, 4 & 5 September 2026' */
+  dateLabel?: string;
   venue: string;
   category: string;
   description: string;
@@ -20,70 +26,53 @@ export type Program = {
   listing: ProgramListing;
   status: ProgramStatus;
   isPlaceholder?: boolean;
+  /** Some details still await confirmation by the academy */
+  verify?: boolean;
+  archiveUrl?: string;
   updatedAt: string;
 };
 
 export const PROGRAM_CATEGORIES = ['Performance', 'Festival', 'Workshop', 'Rangapravesha', 'Outreach', 'Lecture-demonstration', 'Cultural programme'];
 
-const now = '2026-01-01T00:00:00.000Z';
+const now = '2026-10-23T00:00:00.000Z';
 
+/**
+ * Real records only. Upcoming programs are added through the admin prototype
+ * (or here) once the academy announces them — the page shows an honest empty
+ * state until then. A dated program moves to Past automatically once it ends.
+ */
 export const seedPrograms: Program[] = [
   {
-    id: 'seed-upcoming-1',
-    title: 'Upcoming Program 01',
-    dateTime: '',
-    venue: 'Venue to be announced',
-    category: 'Performance',
-    description: 'Placeholder entry — the title, date, venue and description of this program will be announced by the institution.',
-    details: 'Additional details such as performers, repertoire and entry information can be listed here.',
-    image: '',
-    registrationUrl: '',
-    listing: 'upcoming',
-    status: 'published',
-    isPlaceholder: true,
-    updatedAt: now,
-  },
-  {
-    id: 'seed-upcoming-2',
-    title: 'Upcoming Program 02',
-    dateTime: '',
-    venue: 'Venue to be announced',
-    category: 'Workshop',
-    description: 'Placeholder entry — a workshop or lecture-demonstration to be announced.',
-    details: '',
-    image: '',
-    registrationUrl: '',
-    listing: 'upcoming',
-    status: 'published',
-    isPlaceholder: true,
-    updatedAt: now,
-  },
-  {
-    id: 'seed-past-1',
-    title: 'Past Program 01',
-    dateTime: '',
-    venue: 'Venue to be added',
+    id: 'natyaaradhana-15',
+    title: 'Natyaaradhana 15 — National Dance Festival',
+    dateTime: '2026-09-03',
+    endDate: '2026-09-05',
+    dateLabel: '3, 4 & 5 September 2026',
+    venue: 'Kuvempu Rangamandira, Shivamogga',
     category: 'Festival',
-    description: 'Placeholder entry — a record of a past program, with photographs, will be added here.',
-    details: '',
-    image: '',
+    description:
+      'The fifteenth edition of the academy’s national dance festival: a day presented by the senior batch, a day presided over by Guru Sahana Chethan, and a day of visiting artists — with a Kathak presentation by Priyanka and Prathibimba, a tribute to Da. Ra. Bendre.',
+    details: 'Supported by the Department of Kannada and Culture, Shivamogga.',
+    image: photoUrl(photos.n15Backdrop),
     listing: 'past',
     status: 'published',
-    isPlaceholder: true,
+    verify: true,
+    archiveUrl: '/annual-events#natyaaradhana',
     updatedAt: now,
   },
   {
-    id: 'seed-past-2',
-    title: 'Past Program 02',
+    id: 'shivamogga-vaibhava',
+    title: 'Shivamogga Vaibhava',
     dateTime: '',
-    venue: 'Venue to be added',
-    category: 'Performance',
-    description: 'Placeholder entry — a record of a past performance will be added here.',
-    details: '',
+    dateLabel: 'Dasara · year to be confirmed',
+    venue: 'Freedom Park',
+    category: 'Cultural programme',
+    description: 'A Dasara presentation of the history of Shivamogga, staged across various Dasara platforms at 6:00 PM each day.',
     image: '',
     listing: 'past',
     status: 'published',
-    isPlaceholder: true,
+    verify: true,
+    archiveUrl: '/annual-events#shivamogga-vaibhava',
     updatedAt: now,
   },
 ];

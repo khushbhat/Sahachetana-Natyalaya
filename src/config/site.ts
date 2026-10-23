@@ -11,8 +11,8 @@ export const SITE = {
   region: 'Shivamogga, Karnataka',
   /** Public URL once deployed — used for canonical links and the sitemap */
   url: '',
-  tagline: 'Where discipline becomes devotion, and every rhythm finds its stage.',
-  taglineIsPlaceholder: true,
+  /** Proposed copy — replace with the academy's own line if it has one */
+  tagline: 'Bharatanatyam, taught with discipline and shared generously.',
 };
 
 export const CONTACT = {

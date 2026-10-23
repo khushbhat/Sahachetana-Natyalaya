@@ -1,36 +1,37 @@
 import { useCallback, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Expand } from 'lucide-react';
-import { gallery, GALLERY_CATEGORIES } from '../../data/gallery';
+import { activeCategories, gallery } from '../../data/gallery';
+import { SHOW_VERIFICATION_NOTES } from '../../config/site';
 import { usePageMeta } from '../../lib/hooks';
 import { PageHero } from '../../components/layout/Editorial';
 import { Media } from '../../components/layout/Media';
 import { Lightbox } from '../../components/gallery/Lightbox';
 
 export function GalleryPage() {
-  usePageMeta('Memory Gallery', 'A curated archive of performances, festivals, classes, Rangapravesha recitals and outreach at Sahachetana Natyalaya (R.).');
+  usePageMeta('Memory Gallery', 'Photographs from Natyaaradhana, performances, the moments before the curtain and community programmes of Sahachetana Natyalaya (R.).');
   const [params, setParams] = useSearchParams();
   const requested = params.get('category');
-  const category = GALLERY_CATEGORIES.find((c) => c === requested) ?? 'All';
+  const categories = activeCategories();
+  const category = categories.find((c) => c === requested) ?? 'All';
   const items = category === 'All' ? gallery : gallery.filter((g) => g.category === category);
   const [open, setOpen] = useState<number | null>(null);
   const close = useCallback(() => setOpen(null), []);
 
-  const counts = Object.fromEntries(GALLERY_CATEGORIES.map((c) => [c, gallery.filter((g) => g.category === c).length]));
+  const counts = Object.fromEntries(categories.map((c) => [c, gallery.filter((g) => g.category === c).length]));
 
   return (
     <>
       <PageHero eyebrow="Memory Gallery" title="Moments from the archive">
         <p className="lead">
-          Performances, festivals, classes and the quiet moments between — a growing archive of Sahachetana’s life on and off the stage.
+          The stage, the wings and the green room — a growing archive of Sahachetana’s life on and off the stage, beginning with Natyaaradhana 15.
         </p>
-        <p className="muted">Framed placeholders mark photographs still to be supplied by the institution.</p>
       </PageHero>
 
       <section className="section gallery" aria-label="Gallery">
         <div className="container container--wide">
           <div className="filters" role="group" aria-label="Filter by category">
-            {(['All', ...GALLERY_CATEGORIES] as const).map((c) => (
+            {(['All', ...categories] as const).map((c) => (
               <button
                 key={c}
                 type="button"
@@ -61,6 +62,7 @@ export function GalleryPage() {
                 <p className="masonry__cap">
                   <span className="masonry__cat">{g.category}</span>
                   {g.caption}
+                  {SHOW_VERIFICATION_NOTES && g.verify && <span className="tag tag--verify">To be verified</span>}
                 </p>
               </li>
             ))}

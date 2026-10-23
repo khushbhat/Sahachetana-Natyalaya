@@ -26,6 +26,33 @@ CROPS = {
     "class-team-crop": ("class-team-photograph.JPG", (0.22, 0.38, 0.78, 1.0)),
     "sahana-portrait": ("portrait-guru-vidushi-sahana-chethan.JPG", (0.285, 0.0, 0.82, 1.0)),
     "sahana-portrait-wide": ("portrait-guru-vidushi-sahana-chethan.JPG", (0.0, 0.0, 1.0, 1.0)),
+    # --- Natyaaradhana 15, evening of 3 Sept 2026 (images/images/aesthetics, camera EXIF date)
+    "n15-backdrop": ("images/aesthetics/DSC08195.JPG", (0.0, 0.0, 1.0, 1.0)),
+    "n15-stage-lights": ("images/aesthetics/DSC08203.JPG", (0.0, 0.0, 1.0, 1.0)),
+    "n15-arms-raised": ("images/aesthetics/DSC08352.JPG", (0.0, 0.0, 1.0, 1.0)),
+    "n15-trio": ("images/aesthetics/DSC08315.JPG", (0.0, 0.08, 1.0, 1.0)),
+    "n15-ensemble-line": ("images/aesthetics/DSC08236.JPG", (0.0, 0.0, 1.0, 1.0)),
+    "n15-adavu-feet": ("images/aesthetics/DSC08241.JPG", (0.04, 0.22, 0.86, 1.0)),
+    "n15-floor": ("images/aesthetics/DSC08275.JPG", (0.0, 0.18, 1.0, 1.0)),
+    "n15-finale": ("images/aesthetics/DSC08398.JPG", (0.0, 0.24, 1.0, 0.88)),
+    "n15-soloist": ("images/aesthetics/DSC08225.JPG", (0.0, 0.0, 1.0, 1.0)),
+    "n15-smile": ("images/aesthetics/DSC08227.JPG", (0.0, 0.0, 1.0, 1.0)),
+    "n15-pair": ("images/aesthetics/DSC08351.JPG", (0.0, 0.1, 1.0, 1.0)),
+    "n15-pleats": ("images/aesthetics/DSC08325.JPG", (0.0, 0.1, 1.0, 1.0)),
+    "n15-young-pose": ("images/aesthetics/DSC08367.JPG", (0.0, 0.0, 1.0, 1.0)),
+    "n15-young-ensemble": ("images/aesthetics/DSC08366.JPG", (0.0, 0.1, 1.0, 1.0)),
+    "n15-spotlight": ("images/aesthetics/DSC08280.JPG", (0.0, 0.0, 1.0, 1.0)),
+    "n15-wings": ("images/aesthetics/DSC08414.JPG", (0.0, 0.0, 1.0, 1.0)),
+    "n15-backstage-hair": ("images/aesthetics/DSC07991.JPG", (0.0, 0.0, 1.0, 1.0)),
+    "n15-jasmine": ("images/aesthetics/DSC08148.JPG", (0.0, 0.0, 1.0, 1.0)),
+    "n15-ornament": ("images/aesthetics/DSC08149.JPG", (0.0, 0.0, 1.0, 1.0)),
+    "n15-arrival": ("images/aesthetics/DSC08153.JPG", (0.0, 0.0, 1.0, 1.0)),
+    "n15-greenroom": ("images/aesthetics/DSC08119.JPG", (0.0, 0.0, 1.0, 1.0)),
+    # --- Other programmes (images/images/events, performances)
+    "community-group": ("images/events/FB_IMG_1787166454546.jpg", (0.0, 0.0, 1.0, 1.0)),
+    "community-audience": ("images/events/FB_IMG_1786871239248.jpg", (0.0, 0.0, 1.0, 1.0)),
+    "bharatiyam-group": ("images/events/IMG-20260817-WA0115.jpg", (0.0, 0.0, 1.0, 1.0)),
+    "sahana-performance": ("images/performances/0Z6A9394.JPG", (0.22, 0.06, 0.78, 1.0)),
 }
 
 
@@ -40,10 +67,12 @@ def build_photos():
                 continue
             th = round(im.height * tw / im.width)
             im.resize((tw, th), Image.LANCZOS).save(OUT / f"{name}-{tw}.webp", quality=80, method=6)
+        if im.width < WIDTHS[0]:
+            im.save(OUT / f"{name}-{im.width}.webp", quality=82, method=6)
         fw = min(1200, im.width)
         im.resize((fw, round(im.height * fw / im.width)), Image.LANCZOS).save(
             OUT / f"{name}.jpg", quality=82, optimize=True, progressive=True)
-        print(name, im.size, "aspect", round(im.width / im.height, 4))
+        print(name, im.size, "aspect", round(im.width / im.height, 4), "widths", [w for w in WIDTHS if w <= im.width])
 
 
 def build_lineart():

@@ -86,6 +86,17 @@ export function FounderProfile({ founder, reverse = false }: { founder: Founder;
         </section>
       )}
 
+      {founder.secondary && (
+        <figure className="profile__plate reveal">
+          <Media image={founder.secondary.image} ratio="4 / 4.4" sizes="(min-width: 1024px) 34vw, 90vw" />
+          <figcaption>
+            <span className="profile__plate-label">On stage</span>
+            {founder.secondary.caption}
+            {SHOW_VERIFICATION_NOTES && founder.secondary.verify && <span className="tag tag--verify">To be verified</span>}
+          </figcaption>
+        </figure>
+      )}
+
       <div className="profile__facts">
         {founder.sections.map((s, i) => (
           <section key={s.id} id={`${founder.id}-${s.id}`} className="fact-card reveal" aria-labelledby={`${founder.id}-${s.id}-h`}>

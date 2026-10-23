@@ -1,4 +1,4 @@
-import { awards, RECIPIENT_GROUPS } from '../../data/awards';
+import { awards, press, RECIPIENT_GROUPS } from '../../data/awards';
 import { usePageMeta } from '../../lib/hooks';
 import { PageHero, SectionHeading } from '../../components/layout/Editorial';
 import { Media } from '../../components/layout/Media';
@@ -83,6 +83,34 @@ export function AwardsPage() {
               );
             })}
           </ul>
+        </div>
+      </section>
+
+      <section className="section press" aria-labelledby="press-title">
+        <div className="container container--narrow">
+          <SectionHeading eyebrow="Press archive" id="press-title" title="In print" align="center" divider />
+          {press.length === 0 ? (
+            <p className="center placeholder-text reveal">
+              Newspaper coverage and dance columns will be listed here — publication, date and title — once the clippings are supplied.
+            </p>
+          ) : (
+            <ol className="press__list">
+              {press.map((p) => (
+                <li key={p.id} className="press__item reveal">
+                  <span className="press__pub">{p.publication}</span>
+                  {p.date && <span className="press__date">{p.date}</span>}
+                  {p.url ? (
+                    <a href={p.url} target="_blank" rel="noreferrer" className="press__title">
+                      {p.title}
+                      <span className="sr-only"> (opens in a new tab)</span>
+                    </a>
+                  ) : (
+                    <span className="press__title">{p.title}</span>
+                  )}
+                </li>
+              ))}
+            </ol>
+          )}
         </div>
       </section>
     </>

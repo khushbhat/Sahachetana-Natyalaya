@@ -1,48 +1,82 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
-import { SITE } from '../../config/site';
-import { photos, LINE_ART_ANKLETS } from '../../data/images';
+import { SITE, SHOW_VERIFICATION_NOTES } from '../../config/site';
+import { photos, LINE_ART_ANKLETS, type PhotoAsset } from '../../data/images';
 import { sahana, chetan } from '../../data/founders';
 import { gallery } from '../../data/gallery';
-import { natyaaradhana } from '../../data/events';
+import { latestEdition, isPastEdition, natyaaradhana } from '../../data/events';
+import { schedule, venues } from '../../data/batches';
 import { usePageMeta } from '../../lib/hooks';
-import { formatProgramDate, sortPrograms, usePublishedPrograms } from '../../lib/programStore';
+import { effectiveListing, formatProgramDate, sortPrograms, usePublishedPrograms } from '../../lib/programStore';
 import { ArchFrame } from '../../components/ornaments/ArchFrame';
-import { CornerFrame, MudraMark, Rosette, Stellate, type MudraKind } from '../../components/ornaments/Hoysala';
+import { CornerFrame, MudraMark, Rosette, Stellate } from '../../components/ornaments/Hoysala';
 import { Divider } from '../../components/ornaments/Divider';
 import { Ghungroo } from '../../components/ornaments/Ghungroo';
+import { AdavuFoot, ArchiveLabel } from '../../components/ornaments/Adavu';
 import { Media } from '../../components/layout/Media';
-import { EditorialRow, SectionHeading } from '../../components/layout/Editorial';
-import { FestivalPoster } from '../../components/events/FestivalPoster';
+import { SectionHeading } from '../../components/layout/Editorial';
 
-const PRINCIPLES: { title: string; text: string; mudra: MudraKind }[] = [
-  { title: 'Classical discipline', text: 'Adavus, rhythm and posture practised with patience, until technique becomes second nature.', mudra: 'pataka' },
-  { title: 'Bharatanatyam training', text: 'Systematic learning across seven teaching locations, with individual guidance at every stage.', mudra: 'alapadma' },
-  { title: 'Performance & choreography', text: 'Repertoire and new choreography brought to the stage — from Margam to theatre.', mudra: 'mukula' },
-  { title: 'Cultural curation', text: 'Festivals and programmes that bring dance, theatre, music and literature into one conversation.', mudra: 'alapadma' },
-  { title: 'Young artists', text: 'Stage opportunities on distinguished national platforms for dancers at the start of their journey.', mudra: 'mukula' },
-  { title: 'Preservation & education', text: 'Keeping a classical inheritance alive by teaching it widely — and generously.', mudra: 'pataka' },
+type WorkItem = { title: string; text: string; image: PhotoAsset; caption: string; to: string; cta: string };
+
+const WORK: WorkItem[] = [
+  {
+    title: 'Bharatanatyam training',
+    text: `${schedule.length} weekly classes at ${venues.length} venues in and around Shivamogga, from junior batches to Vidwat preparation.`,
+    image: photos.n15AdavuFeet,
+    caption: 'Adavus in unison — feet, bells and the floor.',
+    to: '/classes',
+    cta: 'See the timetable',
+  },
+  {
+    title: 'Performance & student development',
+    text: 'Repertoire and new choreography taken to the stage, so that students learn to perform as well as to practise.',
+    image: photos.n15Trio,
+    caption: 'Three dancers, one line.',
+    to: '/programs',
+    cta: 'Programs',
+  },
+  {
+    title: 'Natyaaradhana',
+    text: 'The academy’s national dance festival — fifteen editions, according to the professional profile.',
+    image: photos.n15Backdrop,
+    caption: 'The Natyaaradhana 15 stage.',
+    to: '/annual-events#natyaaradhana',
+    cta: 'The festival archive',
+  },
+  {
+    title: 'Cultural programming',
+    text: 'Dasara presentations such as Shivamogga Vaibhava, and evenings that bring dance, theatre and literature together.',
+    image: photos.n15Spotlight,
+    caption: 'A single beam through the haze.',
+    to: '/annual-events#shivamogga-vaibhava',
+    cta: 'Annual events',
+  },
+  {
+    title: 'Community & access',
+    text: 'Free Bharatanatyam training for underprivileged children, and outreach such as Bharatiyam and Patyadarshini.',
+    image: photos.n15YoungEnsemble,
+    caption: 'Young dancers on the festival stage.',
+    to: '/annual-events#initiatives',
+    cta: 'Initiatives',
+  },
 ];
 
-const IMPACT = [
-  { name: 'Government-school children', text: 'Dance and music education taken into government schools, so that classical arts reach classrooms that rarely see them.' },
-  { name: 'Free classical training', text: 'Bharatanatyam taught free of cost to children from economically disadvantaged families — a commitment sustained for over two decades.' },
-  { name: 'Bharatheeyam', text: 'An outreach initiative carrying classical arts education to children.' },
-  { name: 'Patyadarshini', text: 'Textbook poems and prose reimagined as dance — learned, performed and owned by the children themselves.' },
-  { name: 'Free Rangapravesha', text: 'A dancer’s formal debut offered free, so a first solo recital never depends on a family’s means.' },
-  { name: 'Dance, theatre & literature', text: 'Free cultural programmes and opportunities for emerging artists to share the stage.' },
-];
+const MEMORIES = ['g-n15-finale', 'g-hair', 'g-n15-pleats', 'g-jasmine', 'g-n15-smile', 'g-wings'];
 
 export function HomePage() {
   usePageMeta(
     'Home',
-    'Sahachetana Natyalaya (R.), led by Guru Vidushi Sahana Chethan — classical Bharatanatyam training, performance, choreography, the Natyaaradhana National Dance Festival and free arts education.',
+    'Sahachetana Natyalaya (R.), Shivamogga — Bharatanatyam classes, performance, choreography and the Natyaaradhana National Dance Festival, led by Guru Vidushi Sahana Chethan.',
   );
-  const programs = sortPrograms(
-    usePublishedPrograms().filter((p) => p.listing === 'upcoming'),
+  const [work, setWork] = useState(0);
+  const upcoming = sortPrograms(
+    usePublishedPrograms().filter((p) => effectiveListing(p) === 'upcoming'),
     'upcoming',
   ).slice(0, 2);
-  const galleryPreview = gallery.slice(0, 5);
+  const memories = MEMORIES.map((id) => gallery.find((g) => g.id === id)!).filter(Boolean);
+  const ed = latestEdition;
+  const edPast = isPastEdition(ed);
 
   return (
     <>
@@ -63,44 +97,30 @@ export function HomePage() {
             </p>
             <p className="hero__tagline hero__in hero__in--3">{SITE.tagline}</p>
             <p className="hero__intro hero__in hero__in--4">
-              Led by {SITE.leader}, Sahachetana Natyalaya is a home for classical Bharatanatyam — training, performance, choreography and
-              cultural curation, offered with a lasting commitment to children who could not otherwise learn.
+              Founded by {SITE.leader}, the academy teaches Bharatanatyam across Shivamogga, takes its students to the stage, and each year
+              hosts Natyaaradhana, its national dance festival.
             </p>
             <div className="btn-row hero__in hero__in--5">
-              <Link to="/founders" className="btn btn--primary">
-                Explore our journey
+              <Link to="/classes" className="btn btn--primary">
+                Join a class
               </Link>
-              <Link to="/classes" className="btn">
-                Join our classes
+              <Link to="/founders" className="btn">
+                Meet the founders
               </Link>
             </div>
-            <dl className="hero__facts hero__in hero__in--5">
-              <div>
-                <dt>15</dt>
-                <dd>national editions of Natyaaradhana</dd>
-              </div>
-              <div>
-                <dt>20+</dt>
-                <dd>years of artistic work</dd>
-              </div>
-              <div>
-                <dt>7</dt>
-                <dd>teaching locations</dd>
-              </div>
-            </dl>
           </div>
 
           <div className="hero__visual">
             <Stellate size={640} className="hero__stellate" />
             <ArchFrame pillars ratio={1.32} className="hero__arch">
-              <Media image={photos.heroDancer} eager sizes="(min-width: 1024px) 34vw, 80vw" />
+              <Media image={photos.n15ArmsRaised} eager sizes="(min-width: 1024px) 34vw, 80vw" />
             </ArchFrame>
             <div className="hero__bells" aria-hidden="true">
-              <Ghungroo size={18} tilt={-6} />
-              <Ghungroo size={24} />
-              <Ghungroo size={18} tilt={6} />
+              <Ghungroo size={16} tilt={-6} />
+              <Ghungroo size={22} />
+              <Ghungroo size={16} tilt={6} />
             </div>
-            <p className="hero__credit">Performance photograph · Sahachetana Natyalaya</p>
+            <ArchiveLabel className="hero__label" kicker="Pl. 1" lines={[`Natyaaradhana ${ed.edition}`, ed.venue ?? '', 'September 2026']} />
           </div>
         </div>
         <a href="#introduction" className="hero__scroll">
@@ -108,117 +128,37 @@ export function HomePage() {
         </a>
       </section>
 
-      {/* ------------------------------------------------ Introduction */}
-      <section id="introduction" className="section intro-section" data-nav-section="home" aria-labelledby="intro-title">
-        <div className="container intro-section__grid">
-          <figure className="intro-section__media reveal">
-            <CornerFrame size={56}>
-              <Media image={photos.classTeam} ratio="4 / 3.2" sizes="(min-width: 1024px) 55vw, 100vw" />
-            </CornerFrame>
-            <div className="intro-section__inset">
-              <Media image={photos.gejjeDetail} ratio="1" sizes="240px" />
-            </div>
-            <figcaption className="editorial__caption">The guru with her young dancers, before a full auditorium.</figcaption>
+      {/* ------------------------------------------------ About the academy */}
+      <section id="introduction" className="section about" data-nav-section="home" aria-labelledby="intro-title">
+        <div className="container container--wide">
+          <figure className="about__plate reveal">
+            <Media image={photos.n15Finale} ratio="2.08 / 1" sizes="(min-width: 1400px) 1300px, 100vw" />
+            <figcaption className="about__caption">
+              <span>The company in a closing tableau</span>
+              <span>Natyaaradhana {ed.edition} · Kuvempu Rangamandira</span>
+            </figcaption>
           </figure>
-          <div className="intro-section__text reveal reveal-delay-1">
-            <p className="eyebrow">The institution</p>
+        </div>
+        <div className="container about__grid">
+          <div className="about__head reveal">
+            <p className="eyebrow">The academy</p>
             <h2 id="intro-title">
-              A sustained commitment to <em className="italic-accent">Bharatanatyam</em>
+              A school, a stage <em className="italic-accent">and a festival</em>
             </h2>
+            <AdavuFoot width={150} className="about__foot" />
+          </div>
+          <div className="about__text reveal reveal-delay-1">
             <p className="lead">
-              Sahachetana Natyalaya (R.), led by Vidushi Sahana Chethan, represents a sustained commitment to Bharatanatyam training,
-              performance, choreography, cultural curation and socially accessible arts education.
+              Sahachetana Natyalaya (R.) is a Bharatanatyam academy in Shivamogga, founded and led by Guru Vidushi Sahana Chethan, with
+              Chetan S. as Artistic Director.
             </p>
             <p>
-              The institution brings together disciplined classical practice and real opportunity: its young artists perform on
-              distinguished national and international stages.
-            </p>
-            <p>
-              Its work spans the Natyaaradhana National Dance Festival, grassroots arts outreach, free classical Bharatanatyam training for
-              economically marginalised students, Rangapravesha initiatives, and free cultural programmes that connect dance, theatre and
-              literature.
-            </p>
-            <p className="intro-section__note">
-              The professional profile records <strong>15 national editions</strong> of Natyaaradhana and{' '}
-              <strong>more than two decades</strong> of artistic excellence.
+              Its work runs from the weekly class to the festival stage: Bharatanatyam training, student performances, choreography,
+              cultural programmes such as the Dasara presentation <em>Shivamogga Vaibhava</em>, and the Natyaaradhana National Dance
+              Festival. Alongside, the academy offers free Bharatanatyam training to underprivileged children.
             </p>
             <Link to="/founders" className="text-link">
-              Our story <ArrowRight size={16} aria-hidden="true" />
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ------------------------------------------------ Philosophy */}
-      <section className="section section--contrast philosophy" data-nav-section="home" aria-labelledby="philosophy-title">
-        <Stellate size={760} className="philosophy__stellate" />
-        <div className="container">
-          <div className="philosophy__head">
-            <SectionHeading
-              eyebrow="Artistic philosophy"
-              title={
-                <>
-                  Classical discipline, <em className="italic-accent">offered generously.</em>
-                </>
-              }
-              id="philosophy-title"
-            />
-            <figure className="philosophy__plate reveal" aria-label="Line drawing of a dancer's feet wearing gejje">
-              <CornerFrame size={40}>
-                <div className="philosophy__plate-art" style={{ ['--art' as string]: `url(${LINE_ART_ANKLETS})` }} />
-              </CornerFrame>
-              <figcaption>Gejje — the first ornament a dancer ties on, and the rhythm she answers to.</figcaption>
-            </figure>
-          </div>
-          <ol className="principles">
-            {PRINCIPLES.map((p, i) => (
-              <li key={p.title} className="principle reveal" style={{ transitionDelay: `${(i % 3) * 90}ms` }}>
-                <span className="principle__num">{String(i + 1).padStart(2, '0')}</span>
-                <MudraMark kind={p.mudra} size={30} />
-                <h3>{p.title}</h3>
-                <p>{p.text}</p>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
-
-      {/* ------------------------------------------------ Social impact */}
-      <section className="section impact" data-nav-section="events" aria-labelledby="impact-title">
-        <div className="container">
-          <div className="impact__grid">
-            <div className="impact__lead">
-              <SectionHeading
-                eyebrow="Social impact"
-                id="impact-title"
-                title="A stage that belongs to every child"
-                intro={
-                  <p>
-                    For more than two decades, Sahachetana has opened classical training to children whose families could not afford it —
-                    and has carried dance into government schools. The aim is simple: talent, not circumstance, should decide who dances.
-                  </p>
-                }
-              />
-              <figure className="impact__figure reveal">
-                <Media placeholder="Outreach — children in class" ratio="4 / 5" />
-                <figcaption className="editorial__caption">Outreach photography to be supplied by the institution.</figcaption>
-              </figure>
-            </div>
-            <ul className="impact__list">
-              {IMPACT.map((item, i) => (
-                <li key={item.name} className="impact__item reveal" style={{ transitionDelay: `${(i % 2) * 100}ms` }}>
-                  <Ghungroo size={20} />
-                  <div>
-                    <h3>{item.name}</h3>
-                    <p>{item.text}</p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="center reveal">
-            <Link to="/annual-events" className="btn">
-              Our initiatives
+              The academy’s story <ArrowRight size={16} aria-hidden="true" />
             </Link>
           </div>
         </div>
@@ -226,146 +166,176 @@ export function HomePage() {
 
       {/* ------------------------------------------------ Founders preview */}
       <section className="section section--surface founders-preview" data-nav-section="founders" aria-labelledby="founders-title">
-        <div className="container">
-          <SectionHeading eyebrow="Leadership" id="founders-title" title="The founders" align="center" divider />
-          <EditorialRow
-            media={<Media image={sahana.portrait} ratio="4 / 5" sizes="(min-width: 1024px) 40vw, 100vw" />}
-            frame="offset"
-            mediaWidth="narrow"
-          >
-            <p className="eyebrow">{sahana.designation}</p>
-            <h3 className="founders-preview__name">
-              <span className="founders-preview__hon">{sahana.honorific}</span> {sahana.name}
-            </h3>
-            <p className="lead">{sahana.intro}</p>
-            <blockquote className="pull-quote">
-              <p>“{sahana.quote?.text}”</p>
-            </blockquote>
-            <Link to="/founders#sahana-chethan" className="text-link">
-              Read her journey <ArrowRight size={16} aria-hidden="true" />
-            </Link>
-          </EditorialRow>
-          <EditorialRow
-            media={<Media image={null} placeholder="Portrait — Chetan S." ratio="4 / 5" />}
-            frame="offset"
-            mediaWidth="narrow"
-            reverse
-          >
-            <p className="eyebrow">{chetan.designation}</p>
-            <h3 className="founders-preview__name">{chetan.name}</h3>
-            <p className="lead">{chetan.intro}</p>
-            <Link to="/founders#chetan-s" className="text-link">
-              View profile <ArrowRight size={16} aria-hidden="true" />
-            </Link>
-          </EditorialRow>
-        </div>
-      </section>
-
-      {/* ------------------------------------------------ Highlights */}
-      <section className="section highlights" data-nav-section="classes" aria-labelledby="highlights-title">
-        <div className="container">
-          <SectionHeading eyebrow="In numbers" id="highlights-title" title="An institution, measured in seasons" align="center" />
-          <ul className="highlights__grid">
-            <li className="highlight reveal">
-              <span className="highlight__value">15</span>
-              <span className="highlight__label">National editions of Natyaaradhana</span>
-              <span className="highlight__src">According to the professional profile</span>
-            </li>
-            <li className="highlight reveal reveal-delay-1">
-              <span className="highlight__value">
-                20<sup>+</sup>
-              </span>
-              <span className="highlight__label">Years of artistic work</span>
-              <span className="highlight__src">According to the professional profile</span>
-            </li>
-            <li className="highlight reveal reveal-delay-2">
-              <span className="highlight__value">7</span>
-              <span className="highlight__label">Teaching locations across the week</span>
-              <span className="highlight__src">The institution’s current description</span>
-            </li>
-            <li className="highlight reveal reveal-delay-2">
-              <span className="highlight__value highlight__value--word">Free</span>
-              <span className="highlight__label">Classical dance education &amp; social outreach</span>
-              <span className="highlight__src">For economically disadvantaged children</span>
-            </li>
-          </ul>
-          <div className="center reveal">
-            <Link to="/classes" className="btn btn--primary">
-              Find a batch
-            </Link>
+        <div className="container founders-preview__grid">
+          <figure className="founders-preview__portrait reveal">
+            <ArchFrame ratio={1.28}>
+              <Media image={sahana.portrait} sizes="(min-width: 1024px) 34vw, 90vw" />
+            </ArchFrame>
+          </figure>
+          <div className="founders-preview__text">
+            <p className="eyebrow reveal">The founders</p>
+            <h2 id="founders-title" className="sr-only">
+              The founders
+            </h2>
+            <article className="founders-preview__person reveal">
+              <p className="founders-preview__role">{sahana.designation}</p>
+              <h3 className="founders-preview__name">
+                <span className="founders-preview__hon">{sahana.honorific}</span> {sahana.name}
+              </h3>
+              <p>
+                Bharatanatyam exponent, choreographer, cultural curator and teacher. MPA in Bharatanatyam, Vidwat, trained in the Madhuri
+                Margam under Dr. Tulasi Ramachandra; a Doordarshan B-High Grade Artiste.
+              </p>
+              <Link to="/founders#sahana-chethan" className="text-link">
+                Her profile <ArrowRight size={16} aria-hidden="true" />
+              </Link>
+            </article>
+            <article className="founders-preview__person founders-preview__person--second reveal reveal-delay-1">
+              <MudraMark kind="pataka" size={26} />
+              <div>
+                <p className="founders-preview__role">{chetan.designation}</p>
+                <h3 className="founders-preview__name">{chetan.name}</h3>
+                <p>{chetan.intro}</p>
+                <Link to="/founders#chetan-s" className="text-link">
+                  His profile <ArrowRight size={16} aria-hidden="true" />
+                </Link>
+              </div>
+            </article>
           </div>
         </div>
       </section>
 
-      {/* ------------------------------------------------ Upcoming programs (live from the program store) */}
-      <section className="section section--tight upcoming-strip" data-nav-section="programs" aria-labelledby="upcoming-title">
-        <div className="container upcoming-strip__grid">
-          <div className="reveal">
-            <p className="eyebrow">Programs</p>
-            <h2 id="upcoming-title">Coming up</h2>
-            <Link to="/programs" className="text-link">
-              All programs <ArrowRight size={16} aria-hidden="true" />
-            </Link>
+      {/* ------------------------------------------------ The academy's work */}
+      <section className="section section--contrast work" data-nav-section="classes" aria-labelledby="work-title">
+        <Stellate size={760} className="work__stellate" />
+        <div className="container work__grid">
+          <div className="work__head reveal">
+            <p className="eyebrow">The work</p>
+            <h2 id="work-title">
+              From the first adavu <em className="italic-accent">to the festival stage</em>
+            </h2>
           </div>
-          <ul className="upcoming-strip__list">
-            {programs.length === 0 && <li className="placeholder-text">New programs will be announced here.</li>}
-            {programs.map((p) => (
-              <li key={p.id} className="upcoming-card reveal">
-                <span className="upcoming-card__date">{formatProgramDate(p.dateTime)}</span>
-                <h3>{p.title}</h3>
-                <p className="muted">
-                  {p.category} · {p.venue}
-                </p>
-                {p.isPlaceholder && <span className="tag tag--placeholder">Placeholder</span>}
+
+          <div className="work__stage" aria-hidden="true">
+            {WORK.map((w, i) => (
+              <figure key={w.title} className={`work__frame ${i === work ? 'is-active' : ''}`}>
+                <CornerFrame size={40}>
+                  <Media image={w.image} ratio="4 / 5" sizes="(min-width: 1024px) 34vw, 1px" />
+                </CornerFrame>
+                <figcaption>{w.caption}</figcaption>
+              </figure>
+            ))}
+          </div>
+
+          <ol className="work__list">
+            {WORK.map((w, i) => (
+              <li
+                key={w.title}
+                className={`work__item reveal ${i === work ? 'is-active' : ''}`}
+                onMouseEnter={() => setWork(i)}
+                onFocus={() => setWork(i)}
+              >
+                <span className="work__num" aria-hidden="true">
+                  {['i', 'ii', 'iii', 'iv', 'v'][i]}
+                </span>
+                <div className="work__body">
+                  <h3>{w.title}</h3>
+                  <p>{w.text}</p>
+                  <Link to={w.to} className="text-link">
+                    {w.cta} <ArrowRight size={15} aria-hidden="true" />
+                  </Link>
+                </div>
+                <div className="work__thumb" aria-hidden="true">
+                  <Media image={w.image} ratio="4 / 3" sizes="(max-width: 1023px) 40vw, 1px" />
+                </div>
               </li>
             ))}
-          </ul>
+          </ol>
         </div>
       </section>
 
-      {/* ------------------------------------------------ Featured event */}
-      <section className="section section--contrast featured" data-nav-section="events" aria-labelledby="featured-title">
-        <div className="container featured__grid">
-          <div className="featured__poster reveal">
-            <FestivalPoster />
-          </div>
-          <div className="featured__text reveal reveal-delay-1">
-            <p className="eyebrow">Featured festival</p>
-            <h2 id="featured-title" className="featured__title">
-              {natyaaradhana.displayName}
+      {/* ------------------------------------------------ Featured festival (archive) */}
+      <section className="section festival-feature" data-nav-section="events" aria-labelledby="featured-title">
+        <div className="container festival-feature__grid">
+          <figure className="festival-feature__media reveal">
+            <Media image={photos.n15Backdrop} ratio="3 / 4" sizes="(min-width: 1024px) 40vw, 100vw" />
+            <figcaption className="festival-feature__kn kn" lang="kn">
+              {natyaaradhana.kannada}–{ed.edition} · {natyaaradhana.kannadaSubtitle}
+            </figcaption>
+          </figure>
+          <div className="festival-feature__text reveal reveal-delay-1">
+            <p className="eyebrow">{edPast ? 'From the archive' : 'Featured festival'}</p>
+            <h2 id="featured-title" className="festival-feature__title">
+              {natyaaradhana.displayName} <span className="festival-feature__ed">{ed.edition}</span>
             </h2>
-            <p className="featured__sub">{natyaaradhana.subtitle}</p>
-            <Divider align="start" variant="gejje" />
-            <p className="lead">{natyaaradhana.summary}</p>
-            <p className="muted">
-              {natyaaradhana.editionsLabel} — {natyaaradhana.editionsSource.toLowerCase()}.
+            <p className="festival-feature__sub">{natyaaradhana.subtitle}</p>
+            <dl className="festival-feature__meta">
+              <div>
+                <dt>Held</dt>
+                <dd>
+                  {ed.datesLabel}
+                  {SHOW_VERIFICATION_NOTES && ed.datesVerify && <span className="tag tag--verify">Dates to be confirmed</span>}
+                </dd>
+              </div>
+              <div>
+                <dt>Venue</dt>
+                <dd>{ed.venue}</dd>
+              </div>
+            </dl>
+            <ol className="festival-feature__days">
+              {ed.days?.map((d) => (
+                <li key={d.label}>
+                  <span>{d.label}</span>
+                  {d.text}
+                </li>
+              ))}
+            </ol>
+            <p className="festival-feature__hl">
+              The edition included <em>Prathibimba</em>, a multi-medium tribute to Da. Ra. Bendre by Vidu. Prathibha Ramaswamy and Vidu. Janani
+              Murali, and a Kathak presentation by Priyanka.
             </p>
-            <Link to="/annual-events" className="btn btn--primary">
-              Festival &amp; annual events
+            <Link to="/annual-events#natyaaradhana" className="btn btn--primary">
+              Visit the festival archive
             </Link>
           </div>
         </div>
+
+        <div className="container upcoming-line reveal" data-nav-section="programs">
+          <span className="upcoming-line__k">Coming up</span>
+          {upcoming.length === 0 ? (
+            <span className="upcoming-line__v">No new programs have been announced yet — new dates will appear here first.</span>
+          ) : (
+            <ul className="upcoming-line__list">
+              {upcoming.map((p) => (
+                <li key={p.id}>
+                  <strong>{p.title}</strong> · {formatProgramDate(p.dateTime, p.dateLabel)}
+                  {p.venue && ` · ${p.venue}`}
+                </li>
+              ))}
+            </ul>
+          )}
+          <Link to="/programs" className="text-link">
+            All programs <ArrowRight size={16} aria-hidden="true" />
+          </Link>
+        </div>
       </section>
 
-      {/* ------------------------------------------------ Gallery preview */}
-      <section className="section gallery-preview" aria-labelledby="gallery-title">
-        <div className="container">
-          <div className="gallery-preview__head">
-            <SectionHeading eyebrow="Memory gallery" id="gallery-title" title="Moments from the archive" />
+      {/* ------------------------------------------------ Photo memories */}
+      <section className="section section--surface memories" aria-labelledby="gallery-title">
+        <div className="container container--wide">
+          <div className="memories__head">
+            <SectionHeading eyebrow="Memory gallery" id="gallery-title" title="Before the curtain, and after" />
             <Link to="/gallery" className="text-link reveal">
               Open the gallery <ArrowRight size={16} aria-hidden="true" />
             </Link>
           </div>
-          <ul className="gallery-preview__grid">
-            {galleryPreview.map((g, i) => (
-              <li key={g.id} className={`gallery-preview__item gallery-preview__item--${i + 1} reveal`}>
-                <Link to={`/gallery?category=${encodeURIComponent(g.category)}`} aria-label={`${g.caption} — view ${g.category} in the gallery`}>
-                  <Media image={g.image} placeholder={g.caption} sizes="(min-width: 1024px) 33vw, 50vw" />
-                  <span className="gallery-preview__cap">
-                    <span className="gallery-preview__cat">{g.category}</span>
-                    {g.caption}
-                  </span>
+          <ul className="memories__grid">
+            {memories.map((g, i) => (
+              <li key={g.id} className={`memories__item memories__item--${i + 1} reveal`}>
+                <Link to={`/gallery?category=${encodeURIComponent(g.category)}`} aria-label={`${g.caption} — more in ${g.category}`}>
+                  <Media image={g.image} sizes="(min-width: 1024px) 40vw, 50vw" />
                 </Link>
+                <p className="memories__cap">{g.caption}</p>
               </li>
             ))}
           </ul>
@@ -375,16 +345,16 @@ export function HomePage() {
       {/* ------------------------------------------------ Invitation */}
       <section className="section invitation" data-nav-section="contact" aria-labelledby="invite-title">
         <div className="container container--narrow center">
-          <Rosette size={72} className="invitation__rosette reveal" />
+          <Rosette size={64} className="invitation__rosette reveal" />
           <p className="eyebrow eyebrow--center reveal">An invitation</p>
           <h2 id="invite-title" className="invitation__title reveal">
-            Let the rhythm begin.
+            Come to class. Come to the stage.
           </h2>
-          <p className="lead reveal">Join a class, invite our artists to perform, or collaborate with us on a cultural programme.</p>
+          <p className="lead reveal">Find a batch near you, ask about a performance, or write to us about a cultural collaboration.</p>
           <div className="invitation__paths reveal">
-            <Link to="/contact?category=New%20Admissions" className="invitation__path">
+            <Link to="/classes" className="invitation__path">
               <MudraMark kind="alapadma" size={30} />
-              <span>Join a class</span>
+              <span>Find a class</span>
             </Link>
             <Link to="/contact?category=Performances" className="invitation__path">
               <MudraMark kind="pataka" size={30} />
@@ -395,6 +365,7 @@ export function HomePage() {
               <span>Collaborate on a programme</span>
             </Link>
           </div>
+          <Divider variant="gejje" className="reveal" />
         </div>
       </section>
     </>

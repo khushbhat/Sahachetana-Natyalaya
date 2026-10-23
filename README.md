@@ -10,7 +10,7 @@ npm install
 npm run dev        # http://localhost:5173
 npm run build      # type-check + production build into dist/
 npm run preview    # serve the production build
-npm run images     # regenerate optimised photos (needs Python 3 + Pillow)
+npm run images     # regenerate optimised photos (needs Python 3 + Pillow: pip install Pillow)
 ```
 
 Useful URL flags while reviewing: `?intro` replays the opening sequence, `?theme=dark` / `?theme=light` forces a theme.
@@ -28,7 +28,7 @@ src/
     layout/       Media (responsive image + placeholder), Editorial blocks, Footer
     classes/ programs/ events/ profiles/ gallery/ contact/ admin/
   pages/          One folder per route
-  data/           ALL editable content (founders, batches, programs, events, awards, gallery, images)
+  data/           ALL editable content (founders, class schedule & venues, programs, events, awards, gallery, photo registry)
   config/site.ts  Contact details, WhatsApp, EmailJS, verification-badge switch
   lib/            hooks (theme, dialogs, scroll spy, reveal) and programStore (event repository)
   styles/         tokens.css, themes.css, global.css, components.css, pages.css
@@ -73,4 +73,5 @@ To connect a backend later, implement the `ProgramRepository` interface in
 `src/lib/programStore.ts` against your API and swap `repository` — the public components
 don't change. Replace the demo login with real server-side authentication at the same time.
 
-See also **ASSETS.md** (images and artwork) and **CONTENT.md** (updating text, placeholders, known limitations).
+See also **DESIGN.md** (visual direction and references), **ASSETS.md** (photo manifest, consent, logo) and
+**CONTENT.md** (updating content, the verification register, placeholders and known limitations).

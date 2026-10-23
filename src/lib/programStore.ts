@@ -17,7 +17,8 @@ export interface ProgramRepository {
   subscribe(listener: () => void): () => void;
 }
 
-const KEY = 'sn-programs-v1';
+// v2: placeholder seeds replaced by real records — older browser copies are ignored
+const KEY = 'sn-programs-v2';
 
 function createLocalRepository(): ProgramRepository {
   const listeners = new Set<() => void>();
@@ -89,10 +90,28 @@ export function useAllPrograms() {
   return useSyncExternalStore(repository.subscribe, repository.list, repository.list);
 }
 
-/** Published programs for the public site, sorted by date within each listing. */
+/** Published programs for the public site. */
 export function usePublishedPrograms() {
   const all = useAllPrograms();
   return all.filter((p) => p.status === 'published');
+}
+
+/** Last moment of a program, or null when it has no date. */
+function endsAt(p: Program) {
+  const day = p.endDate || p.dateTime;
+  if (!day) return null;
+  const d = new Date(day.length <= 10 ? `${day}T23:59:59` : day);
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
+/**
+ * Where a program belongs today. A dated program that has ended is always
+ * Past, whatever it was filed under — so nothing over is shown as upcoming.
+ */
+export function effectiveListing(p: Program, now = new Date()): Program['listing'] {
+  const end = endsAt(p);
+  if (end) return end < now ? 'past' : 'upcoming';
+  return p.listing;
 }
 
 export function sortPrograms(list: Program[], listing: Program['listing']) {
@@ -105,7 +124,8 @@ export function sortPrograms(list: Program[], listing: Program['listing']) {
   });
 }
 
-export function formatProgramDate(dateTime: string) {
+export function formatProgramDate(dateTime: string, label?: string) {
+  if (label) return label;
   if (!dateTime) return 'Date to be announced';
   const d = new Date(dateTime);
   if (Number.isNaN(d.getTime())) return dateTime;

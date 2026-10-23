@@ -20,6 +20,8 @@ export type Founder = {
   designation: string;
   organisation: string;
   portrait: PhotoAsset | null;
+  /** A second photograph — on stage, in class — shown within the profile */
+  secondary?: { image: PhotoAsset; caption: string; verify?: boolean };
   intro: string;
   quote?: { text: string; source: string };
   /** Long-form biography, paragraph by paragraph */
@@ -38,6 +40,11 @@ export const sahana: Founder = {
   designation: 'Founder & Artistic Director',
   organisation: 'Sahachetana Natyalaya (R.)',
   portrait: photos.sahanaPortrait,
+  secondary: {
+    image: photos.sahanaPerformance,
+    caption: 'On stage at a programme of Bharatagama Pratishtana, Bengaluru, July 2026.',
+    verify: true,
+  },
   intro:
     'A Bharatanatyam exponent, choreographer, cultural curator and teacher, Vidushi Sahana Chethan has spent more than two decades building a stage on which young dancers — whatever their circumstances — can learn, perform and belong.',
   quote: {
@@ -101,7 +108,7 @@ export const sahana: Founder = {
       title: 'Cultural curation',
       items: [
         { text: 'Founder of the Natyaaradhana National Dance Festival — 15 national editions, according to the professional profile' },
-        { text: 'Curator of free cultural programmes that connect dance, theatre and literature' },
+        { text: 'Curator of cultural programmes that connect dance, theatre and literature' },
         { text: 'Ajita Shri Puraskara initiatives', verify: true, note: 'Details to be supplied' },
       ],
     },
@@ -109,9 +116,8 @@ export const sahana: Founder = {
       id: 'social',
       title: 'Social contribution',
       items: [
-        { text: 'Free classical Bharatanatyam training for economically disadvantaged children, over twenty-one years', verify: true, note: 'KN profile' },
+        { text: 'Free Bharatanatyam training for underprivileged children, over twenty-one years', verify: true, note: 'KN profile' },
         { text: 'Patyadarshini — textbook poems and prose presented as dance by government-school children' },
-        { text: 'Free Rangapravesha initiatives for deserving students' },
         { text: 'Dance and music education for government-school children' },
       ],
     },
@@ -120,7 +126,7 @@ export const sahana: Founder = {
       title: 'Authorship & publications',
       items: [
         { text: '“Kavi Kanda Yugadi” — a poetry anthology released each Ugadi', verify: true, note: 'Confirm editor/author credit' },
-        { text: 'Around 150 newspaper columns on dance (2018)', verify: true, note: 'Confirm count, year and publication' },
+        { text: 'Around 150 newspaper columns on dance (2018)', verify: true, note: 'Confirm count, year, publication — and author: other source notes associate newspaper articles with Chetan S.' },
       ],
     },
   ],
@@ -159,17 +165,28 @@ export const chetan: Founder = {
   organisation: 'Sahachetana Natyalaya (R.)',
   portrait: null,
   intro:
-    'Described in the Kannada profile as the unseen pillar behind every Sahachetana stage — the “Chetana” of Sahachetana. A full profile will be added once supplied by the institution.',
+    'Artistic Director of Sahachetana Natyalaya (R.). The Kannada profile describes him as the unseen pillar behind every Sahachetana stage — the “Chetana” of Sahachetana.',
   biography: [
     {
-      heading: 'Biography',
-      paragraphs: ['[Biography to be supplied by the institution.]'],
+      heading: 'Profile in preparation',
+      paragraphs: [
+        'A full biography of Chetan S. will be published once the academy has supplied and confirmed it. Until then, this page lists only the areas of work named in the source notes, each marked for confirmation.',
+      ],
     },
   ],
   sections: [
-    { id: 'contributions', title: 'Artistic contributions', items: [{ text: '[To be supplied]' }] },
-    { id: 'responsibilities', title: 'Responsibilities', items: [{ text: '[To be supplied]' }] },
-    { id: 'achievements', title: 'Achievements', items: [{ text: '[To be supplied]' }] },
+    {
+      id: 'areas',
+      title: 'Areas of work named in the source notes',
+      items: [
+        { text: 'Cultural administration and the organisation of the academy’s programmes', verify: true },
+        { text: 'Natyaaradhana National Dance Festival', verify: true },
+        { text: 'Bharatiyam and Patyadarshini initiatives', verify: true },
+        { text: 'Dance education and community engagement', verify: true },
+        { text: 'Choreography and theatre work', verify: true },
+        { text: 'Newspaper articles on the arts', verify: true, note: 'Confirm attribution — see Sahana Chethan’s publications' },
+      ],
+    },
   ],
   stages: [],
   honours: [],

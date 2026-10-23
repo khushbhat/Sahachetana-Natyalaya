@@ -95,11 +95,21 @@ temp/
 .vercel/
 .netlify/
 .turbo/
-# Python virtual environments
+# Python virtual environments and caches (scripts/optimize-images.py)
 venv/
 .venv/
 env/
 ENV/
+__pycache__/
+*.py[cod]
+
+# ==============================
+# Full-resolution photo originals (~700 MB)
+# Source files for `npm run images`; the web-ready crops in
+# public/images/opt/ are what the site ships and stay tracked.
+# Keep the originals in shared storage (or Git LFS) instead.
+# ==============================
+images/images/
 
 .env.example/
 vite.config.ts/

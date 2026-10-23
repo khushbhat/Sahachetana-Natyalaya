@@ -1,10 +1,11 @@
 import { useId, useRef, useState, type FormEvent } from 'react';
 import { AlertCircle, CheckCircle2, Info } from 'lucide-react';
 import { EMAILJS, emailjsConfigured } from '../../config/site';
+import { LOCATION_OPTIONS } from '../../data/batches';
 
 export const ENQUIRY_CATEGORIES = ['New Admissions', 'Batch Timings', 'Performances', 'Cultural Collaboration', 'Events and Workshops', 'General Enquiry'];
 
-type Values = { name: string; email: string; phone: string; category: string; message: string; website: string };
+type Values = { name: string; email: string; phone: string; category: string; location: string; message: string; website: string };
 type Errors = Partial<Record<keyof Values, string>>;
 type Status = { kind: 'idle' | 'sending' | 'sent' | 'demo' | 'error'; message?: string };
 
@@ -31,13 +32,22 @@ function validate(v: Values): Errors {
  * plainly that nothing was sent. Spam protection: a hidden honeypot field and
  * a minimum fill time. Add EmailJS's reCAPTCHA option for production.
  */
-export function EnquiryForm({ initialCategory = '', initialMessage = '' }: { initialCategory?: string; initialMessage?: string }) {
+export function EnquiryForm({
+  initialCategory = '',
+  initialMessage = '',
+  initialLocation = '',
+}: {
+  initialCategory?: string;
+  initialMessage?: string;
+  initialLocation?: string;
+}) {
   const uid = useId();
   const [values, setValues] = useState<Values>({
     name: '',
     email: '',
     phone: '',
     category: ENQUIRY_CATEGORIES.includes(initialCategory) ? initialCategory : '',
+    location: LOCATION_OPTIONS.includes(initialLocation) ? initialLocation : '',
     message: initialMessage,
     website: '',
   });
@@ -93,11 +103,18 @@ export function EnquiryForm({ initialCategory = '', initialMessage = '' }: { ini
       await emailjs.send(
         EMAILJS.serviceId,
         EMAILJS.templateId,
-        { from_name: values.name, reply_to: values.email, phone: values.phone, category: values.category, message: values.message },
+        {
+          from_name: values.name,
+          reply_to: values.email,
+          phone: values.phone,
+          category: values.category,
+          location: values.location || 'Not specified',
+          message: values.message,
+        },
         { publicKey: EMAILJS.publicKey },
       );
       setStatus({ kind: 'sent', message: 'Thank you — your enquiry has been sent. We will be in touch soon.' });
-      setValues({ name: '', email: '', phone: '', category: '', message: '', website: '' });
+      setValues({ name: '', email: '', phone: '', category: '', location: '', message: '', website: '' });
       setTouched({});
     } catch {
       setStatus({ kind: 'error', message: 'Sorry, your enquiry could not be sent. Please try again, or contact us by phone or WhatsApp.' });
@@ -127,7 +144,7 @@ export function EnquiryForm({ initialCategory = '', initialMessage = '' }: { ini
   return (
     <form ref={formRef} className="enquiry" onSubmit={onSubmit} noValidate aria-describedby={`${uid}-req`}>
       <p id={`${uid}-req`} className="enquiry__req muted">
-        All fields are required.
+        All fields are required except the class location.
       </p>
 
       {showSummary && (
@@ -168,6 +185,19 @@ export function EnquiryForm({ initialCategory = '', initialMessage = '' }: { ini
         </div>
       </div>
       <div className="field">
+        <label htmlFor={`${uid}-location`}>
+          Preferred class location <span className="field__optional">(optional)</span>
+        </label>
+        <select {...field('location')}>
+          <option value="">Not sure yet / not about classes</option>
+          {LOCATION_OPTIONS.map((l) => (
+            <option key={l} value={l}>
+              {l}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div className="field">
         <label htmlFor={`${uid}-message`}>Message</label>
         <textarea rows={6} {...field('message')} />
         {err('message')}
@@ -185,6 +215,11 @@ export function EnquiryForm({ initialCategory = '', initialMessage = '' }: { ini
         </button>
         {!emailjsConfigured() && <span className="muted enquiry__mode">Demo mode — email delivery not yet connected.</span>}
       </div>
+
+      <p className="enquiry__privacy">
+        <strong>Your information.</strong> This form asks for your name, email, phone number and message only so that the academy can reply
+        to your enquiry. {emailjsConfigured() ? 'It is delivered by email through the EmailJS service and' : 'While the form is in demo mode nothing is sent or stored. Once connected, enquiries will be delivered by email and'} not used for anything else or shared.
+      </p>
 
       <div ref={summaryRef} tabIndex={-1} aria-live="polite" className="enquiry__status">
         {status.kind === 'sent' && (

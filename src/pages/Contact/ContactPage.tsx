@@ -1,11 +1,11 @@
-import { useSearchParams } from 'react-router-dom';
-import { Mail, MapPin, Phone } from 'lucide-react';
-import { CONTACT, SITE } from '../../config/site';
-import { batches } from '../../data/batches';
+import { Link, useSearchParams } from 'react-router-dom';
+import { Mail, Phone } from 'lucide-react';
+import { CONTACT } from '../../config/site';
+import { classesAtVenue, formatDays, formatRange, venues } from '../../data/batches';
 import { usePageMeta } from '../../lib/hooks';
 import { EnquiryForm } from '../../components/contact/EnquiryForm';
 import { WhatsAppButton } from '../../components/contact/WhatsAppButton';
-import { CornerFrame, Rosette, Stellate } from '../../components/ornaments/Hoysala';
+import { CornerFrame, Stellate } from '../../components/ornaments/Hoysala';
 import { Divider } from '../../components/ornaments/Divider';
 
 const pending = (label: string) => <span className="placeholder-text">{label} to be added</span>;
@@ -13,8 +13,8 @@ const pending = (label: string) => <span className="placeholder-text">{label} to
 export function ContactPage() {
   usePageMeta('Contact Us', 'Enquire about Bharatanatyam classes, performances, cultural collaborations, events and workshops at Sahachetana Natyalaya (R.).');
   const [params] = useSearchParams();
-  const batch = params.get('batch');
-  const initialMessage = batch ? `I would like to know more about ${batch}.` : '';
+  const location = params.get('location') ?? '';
+  const initialMessage = location ? `I would like to know more about the classes at ${location}.` : '';
 
   return (
     <>
@@ -73,16 +73,16 @@ export function ContactPage() {
                   )}
                 </div>
 
-                <h2 className="contact__h">Teaching locations</h2>
-                <p>
-                  Classes run at seven teaching locations through the week. Addresses and batch details will be published as they are
-                  confirmed.
-                </p>
+                <h2 className="contact__h">Where we teach</h2>
                 <ul className="contact__batches">
-                  {batches.map((b) => (
-                    <li key={b.id}>
-                      <span>{b.name}</span>
-                      <span className="muted">{b.location}</span>
+                  {venues.map((v) => (
+                    <li key={v.id}>
+                      <Link to={`/classes#${v.id}`}>{v.name}</Link>
+                      <span className="muted">
+                        {classesAtVenue(v.id)
+                          .map((c) => `${formatDays(c)}, ${formatRange(c)}`)
+                          .join(' · ')}
+                      </span>
                     </li>
                   ))}
                 </ul>
@@ -107,25 +107,7 @@ export function ContactPage() {
 
           <div className="contact__form reveal reveal-delay-1">
             <h2>Send an enquiry</h2>
-            <EnquiryForm key={params.toString()} initialCategory={params.get('category') ?? ''} initialMessage={initialMessage} />
-          </div>
-        </div>
-
-        <div className="container">
-          <div className="map-ph reveal" role="img" aria-label="Map placeholder — location map to be added once the address is confirmed">
-            <svg className="map-ph__lines" viewBox="0 0 800 300" preserveAspectRatio="none" aria-hidden="true">
-              <path d="M0 210C120 180 180 240 300 200S520 120 620 150 760 90 800 110" />
-              <path d="M0 120C160 140 240 80 380 110S600 210 800 180" />
-              <path d="M260 0C250 90 300 180 270 300M560 0C590 110 520 200 560 300" />
-            </svg>
-            <div className="map-ph__pin">
-              <MapPin size={28} aria-hidden="true" />
-              <Rosette size={40} />
-            </div>
-            <p className="map-ph__label">
-              Map to be added once the address is confirmed
-              <span>{SITE.region}</span>
-            </p>
+            <EnquiryForm key={params.toString()} initialCategory={params.get('category') ?? ''} initialMessage={initialMessage} initialLocation={location} />
           </div>
         </div>
       </section>

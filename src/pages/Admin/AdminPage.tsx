@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { AlertTriangle, Eye, LogOut, Pencil, Plus, RotateCcw, Trash2 } from 'lucide-react';
 import type { Program } from '../../data/programs';
 import { usePageMeta, useDialog } from '../../lib/hooks';
-import { formatProgramDate, newProgramId, repository, useAllPrograms } from '../../lib/programStore';
+import { effectiveListing, formatProgramDate, newProgramId, repository, useAllPrograms } from '../../lib/programStore';
 import { EventForm } from '../../components/admin/EventForm';
 import { ProgramEntry } from '../../components/programs/ProgramEntry';
 import { Wordmark } from '../../components/ornaments/Wordmark';
@@ -209,7 +209,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                     {p.isPlaceholder && <span className="tag tag--placeholder">Sample</span>}
                   </th>
                   <td>{formatProgramDate(p.dateTime)}</td>
-                  <td>{p.listing === 'upcoming' ? 'Upcoming' : 'Past'}</td>
+                  <td>{effectiveListing(p) === 'upcoming' ? 'Upcoming' : 'Past'}</td>
                   <td>
                     <span className={`status status--${p.status}`}>{p.status === 'published' ? 'Published' : 'Draft'}</span>
                   </td>

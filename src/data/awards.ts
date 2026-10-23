@@ -73,3 +73,18 @@ export const RECIPIENT_GROUPS: { type: RecipientType; label: string; empty: stri
   { type: 'teacher', label: 'Teachers', empty: 'Honours received by the institution’s teachers will be listed here.' },
   { type: 'student', label: 'Students', empty: 'Achievements of Sahachetana students will be listed here.' },
 ];
+
+/** Press coverage and dance columns. Add an entry once the clipping or link is supplied. */
+export type PressItem = {
+  id: string;
+  publication: string;
+  /** e.g. '12 March 2024' — leave empty if unknown */
+  date: string;
+  title: string;
+  /** link to the article, or omit */
+  url?: string;
+  /** photograph of the clipping, from the registry in images.ts */
+  clipping?: PhotoAsset | null;
+};
+
+export const press: PressItem[] = [];

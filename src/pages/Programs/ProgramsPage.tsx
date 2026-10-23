@@ -2,7 +2,7 @@ import { useRef, type KeyboardEvent } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import type { ProgramListing } from '../../data/programs';
 import { usePageMeta } from '../../lib/hooks';
-import { sortPrograms, usePublishedPrograms } from '../../lib/programStore';
+import { effectiveListing, sortPrograms, usePublishedPrograms } from '../../lib/programStore';
 import { PageHero } from '../../components/layout/Editorial';
 import { ProgramEntry } from '../../components/programs/ProgramEntry';
 import { Ghungroo } from '../../components/ornaments/Ghungroo';
@@ -18,7 +18,7 @@ export function ProgramsPage() {
   const view: ProgramListing = params.get('view') === 'past' ? 'past' : 'upcoming';
   const all = usePublishedPrograms();
   const list = sortPrograms(
-    all.filter((p) => p.listing === view),
+    all.filter((p) => effectiveListing(p) === view),
     view,
   );
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
@@ -37,8 +37,8 @@ export function ProgramsPage() {
     <>
       <PageHero eyebrow="Programs" title="On stage, in season">
         <p className="lead">
-          Performances, festivals, workshops and Rangapravesha recitals presented by Sahachetana Natyalaya — those to come, and an archive
-          of those already danced.
+          Performances, festivals, workshops and cultural programmes presented by Sahachetana Natyalaya — those to come, and a record of
+          those already danced. A program moves to the archive automatically once its last day has passed.
         </p>
       </PageHero>
 
@@ -46,7 +46,7 @@ export function ProgramsPage() {
         <div className="container">
           <div className="tabs" role="tablist" aria-label="Program listings">
             {TABS.map((t, i) => {
-              const count = all.filter((p) => p.listing === t.id).length;
+              const count = all.filter((p) => effectiveListing(p) === t.id).length;
               return (
                 <button
                   key={t.id}
@@ -72,7 +72,17 @@ export function ProgramsPage() {
           <div role="tabpanel" id={`panel-${view}`} aria-labelledby={`tab-${view}`} className="programs__panel" key={view}>
             {list.length === 0 ? (
               <p className="programs__empty placeholder-text">
-                {view === 'upcoming' ? 'New programs will be announced here soon.' : 'The archive of past programs will appear here.'}
+                {view === 'upcoming' ? (
+                  <>
+                    No upcoming programs have been announced yet. New dates will appear here first —{' '}
+                    <button type="button" className="text-link" onClick={() => select('past')}>
+                      browse past programs
+                    </button>
+                    .
+                  </>
+                ) : (
+                  'The archive of past programs will appear here.'
+                )}
               </p>
             ) : (
               list.map((p, i) => <ProgramEntry key={p.id} program={p} index={i} />)

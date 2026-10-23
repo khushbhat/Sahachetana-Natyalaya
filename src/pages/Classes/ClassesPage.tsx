@@ -1,22 +1,29 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { CalendarDays, Clock, GraduationCap, MapPin, User, Users } from 'lucide-react';
-import { batches } from '../../data/batches';
+import { ArrowRight, ExternalLink } from 'lucide-react';
+import { classesAtVenue, formatDays, formatRange, formatTime, schedule, venueById, venues, WEEK } from '../../data/batches';
 import { photos } from '../../data/images';
+import { SHOW_VERIFICATION_NOTES } from '../../config/site';
 import { useActiveSection, usePageMeta } from '../../lib/hooks';
-import { EditorialRow, PageHero } from '../../components/layout/Editorial';
+import { PageHero } from '../../components/layout/Editorial';
 import { Media } from '../../components/layout/Media';
 import { BatchThread } from '../../components/classes/BatchThread';
 import { CornerFrame } from '../../components/ornaments/Hoysala';
+import { AdavuFoot } from '../../components/ornaments/Adavu';
+
+/** One restrained tone per venue, so a venue reads the same in the grid and the list */
+const venueTone = (venueId: string) => `tone-${venues.findIndex((v) => v.id === venueId) + 1}`;
+const enquireHref = (venueName: string) =>
+  `/contact?category=${encodeURIComponent('Batch Timings')}&location=${encodeURIComponent(venueName)}`;
 
 export function ClassesPage() {
   usePageMeta(
     'Classes',
-    'Structured Bharatanatyam classes across seven teaching locations through the week — systematic learning, individual guidance and stage experience at Sahachetana Natyalaya (R.).',
+    `Bharatanatyam classes in Shivamogga — ${schedule.length} weekly batches at ${venues.length} venues, from junior batches to Vidwat preparation, with Sahachetana Natyalaya (R.).`,
   );
-  const spy = useActiveSection('[data-batch]', 'data-batch');
+  const spy = useActiveSection('[data-venue]', 'data-venue');
   const [selected, setSelected] = useState<string | null>(null);
-  // A click lights its bell at once; the scroll spy takes over when the batch
+  // A click lights its bell at once; the scroll spy takes over when the venue
   // is reached or the visitor scrolls by hand.
   useEffect(() => {
     if (selected && spy === selected) setSelected(null);
@@ -35,101 +42,132 @@ export function ClassesPage() {
   }, [selected]);
   const active = selected ?? spy;
 
+  const byDay = WEEK.map((d) => ({
+    ...d,
+    classes: schedule.filter((c) => c.days.includes(d.id)).sort((a, b) => a.start.localeCompare(b.start)),
+  }));
+
   return (
     <>
       <PageHero
         eyebrow="Classes"
-        title="Seven batches, one discipline"
+        title="The weekly timetable"
         aside={
           <CornerFrame size={44}>
-            <Media image={photos.gejjeDetail} ratio="1" sizes="(min-width: 1024px) 28vw, 80vw" />
+            <Media image={photos.n15AdavuFeet} ratio="1" sizes="(min-width: 1024px) 28vw, 80vw" />
           </CornerFrame>
         }
       >
         <p className="lead">
-          Sahachetana Natyalaya conducts structured Bharatanatyam training at seven teaching locations through the week, welcoming students
-          from many communities and backgrounds to the discipline, technique and expressive traditions of Indian classical dance.
+          Bharatanatyam is learned a little at a time, twice a week, for years. The academy teaches {schedule.length} batches at {venues.length}{' '}
+          venues in and around Shivamogga — from junior classes to preparation for the Vidwat examination.
         </p>
-        <p>
-          With an emphasis on systematic learning, individual guidance and stage experience, every batch is part of the institution’s
-          continuing commitment to nurturing dedicated young artists.
-        </p>
+        <p>Choose a day and a place that suits you, then send an enquiry — we will reply with joining details.</p>
       </PageHero>
 
-      <section className="section classes" aria-label="Batches">
+      {/* ---------------- Week at a glance ---------------- */}
+      <section className="section section--tight timetable" aria-labelledby="week-title">
+        <div className="container container--wide">
+          <div className="timetable__head reveal">
+            <h2 id="week-title">The week at a glance</h2>
+            <AdavuFoot width={120} strike={false} />
+          </div>
+
+          <div className="week reveal" role="table" aria-label="Weekly class timetable">
+            <div className="week__row week__row--head" role="row">
+              {WEEK.map((d) => (
+                <span key={d.id} className="week__day" role="columnheader">
+                  <span className="week__day-short" aria-hidden="true">
+                    {d.id}
+                  </span>
+                  <span className="week__day-long">{d.label}</span>
+                </span>
+              ))}
+            </div>
+            <div className="week__row" role="row">
+              {byDay.map((d) => (
+                <div key={d.id} className="week__cell" role="cell">
+                  <span className="week__cell-day">{d.label}</span>
+                  {d.classes.length === 0 && <span className="week__rest">No class</span>}
+                  {d.classes.map((c) => {
+                    const v = venueById(c.venueId);
+                    return (
+                      <a key={c.id} href={`#${v.id}`} className={`week__slot ${venueTone(v.id)}`}>
+                        <span className="week__time">{formatTime(c.start)}</span>
+                        <span className="week__venue">{v.short}</span>
+                        <span className="week__level">{c.level}</span>
+                      </a>
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
+          </div>
+          <p className="timetable__note muted reveal">
+            Days, times and levels as published by the academy. Each class runs for one hour. Fees are shared on enquiry.
+          </p>
+        </div>
+      </section>
+
+      {/* ---------------- Venues ---------------- */}
+      <section className="section classes" aria-labelledby="venues-title">
         <div className="container classes__grid">
-          <BatchThread batches={batches} activeId={active} onSelect={setSelected} />
+          <BatchThread items={venues.map((v) => ({ id: v.id, label: v.short }))} activeId={active} onSelect={setSelected} />
 
           <div className="classes__list">
-            <p className="classes__notice">
-              <span className="tag tag--placeholder">Placeholder</span> Locations, days and timings will be published once confirmed by the
-              institution.
-            </p>
-            {batches.map((b, i) => (
-              <section key={b.id} id={b.id} data-batch={b.id} className="batch" aria-labelledby={`${b.id}-h`}>
-                <EditorialRow
-                  reverse={i % 2 === 1}
-                  frame="corners"
-                  media={<Media image={b.image} placeholder={`${b.name} — class photograph`} ratio="5 / 4" sizes="(min-width: 1024px) 40vw, 100vw" />}
-                >
-                  <p className="batch__num" aria-hidden="true">
-                    {b.name.replace(/\D+/g, '')}
+            <h2 id="venues-title" className="classes__title reveal">
+              Where we teach
+            </h2>
+            {venues.map((v, i) => {
+              const classes = classesAtVenue(v.id);
+              return (
+                <section key={v.id} id={v.id} data-venue={v.id} className={`venue ${venueTone(v.id)} reveal`} aria-labelledby={`${v.id}-h`}>
+                  <p className="venue__num" aria-hidden="true">
+                    {String(i + 1).padStart(2, '0')}
                   </p>
-                  <p className="eyebrow">{b.name}</p>
-                  <h2 id={`${b.id}-h`} tabIndex={-1} className="batch__title">
-                    {b.location}
-                  </h2>
-                  <p>{b.description}</p>
-                  <dl className="batch__details">
-                    <div>
-                      <dt>
-                        <MapPin size={16} aria-hidden="true" /> Address
-                      </dt>
-                      <dd>
-                        {b.address}
-                        <br />
-                        <span className="muted">{b.landmark}</span>
-                      </dd>
+                  <div className="venue__main">
+                    <h3 id={`${v.id}-h`} tabIndex={-1} className="venue__name">
+                      {v.name}
+                    </h3>
+                    <p className="venue__locality">{v.locality}</p>
+
+                    <ul className="venue__classes">
+                      {classes.map((c) => (
+                        <li key={c.id}>
+                          <span className="venue__days">{formatDays(c)}</span>
+                          <span className="venue__time">{formatRange(c)}</span>
+                          <span className="venue__level">{c.level}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="venue__aside">
+                    <p className="venue__address">
+                      <span className="venue__k">Address</span>
+                      {v.address}
+                      {SHOW_VERIFICATION_NOTES && v.status !== 'verified' && v.note && <span className="venue__note">{v.note}</span>}
+                    </p>
+                    <div className="venue__actions">
+                      <Link to={enquireHref(v.name)} className="btn">
+                        Enquire <span className="sr-only">about classes at {v.name}</span>
+                      </Link>
+                      {v.mapUrl && (
+                        <a href={v.mapUrl} className="text-link" target="_blank" rel="noreferrer">
+                          Get directions <ExternalLink size={14} aria-hidden="true" />
+                          <span className="sr-only">(opens in a new tab)</span>
+                        </a>
+                      )}
                     </div>
-                    <div>
-                      <dt>
-                        <CalendarDays size={16} aria-hidden="true" /> Days
-                      </dt>
-                      <dd>{b.days}</dd>
-                    </div>
-                    <div>
-                      <dt>
-                        <Clock size={16} aria-hidden="true" /> Timings
-                      </dt>
-                      <dd>{b.timings}</dd>
-                    </div>
-                    <div>
-                      <dt>
-                        <GraduationCap size={16} aria-hidden="true" /> Level
-                      </dt>
-                      <dd>{b.level}</dd>
-                    </div>
-                    {b.ageGroup && (
-                      <div>
-                        <dt>
-                          <Users size={16} aria-hidden="true" /> Age group
-                        </dt>
-                        <dd>{b.ageGroup}</dd>
-                      </div>
-                    )}
-                    <div>
-                      <dt>
-                        <User size={16} aria-hidden="true" /> Teacher
-                      </dt>
-                      <dd>{b.teacher}</dd>
-                    </div>
-                  </dl>
-                  <Link to={`/contact?category=${encodeURIComponent('Batch Timings')}&batch=${encodeURIComponent(b.name)}`} className="btn">
-                    Enquire about {b.name}
-                  </Link>
-                </EditorialRow>
-              </section>
-            ))}
+                  </div>
+                </section>
+              );
+            })}
+            <p className="classes__more reveal">
+              Not sure which batch suits your child?{' '}
+              <Link to={`/contact?category=${encodeURIComponent('New Admissions')}`} className="text-link">
+                Ask us <ArrowRight size={15} aria-hidden="true" />
+              </Link>
+            </p>
           </div>
         </div>
       </section>
