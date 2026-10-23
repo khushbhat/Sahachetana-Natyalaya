@@ -419,7 +419,7 @@ p {
   transition: opacity var(--dur-slow) var(--ease-out), transform var(--dur-slow) var(--ease-out);
 }
 
-.reveal.is-visible {
+.reveal[data-revealed] {
   opacity: 1;
   transform: none;
 }

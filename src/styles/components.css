@@ -35,6 +35,20 @@
   color: var(--heading);
 }
 
+.wordmark picture {
+  display: contents;
+}
+
+.wordmark__motif {
+  flex: none;
+  width: auto;
+  height: 52px;
+}
+
+.wordmark--compact .wordmark__motif {
+  height: 36px;
+}
+
 .wordmark__text {
   display: flex;
   flex-direction: column;
@@ -229,9 +243,12 @@
   }
 }
 
-@media (max-width: 340px) {
+@media (max-width: 420px) {
+  .wordmark {
+    gap: 0.45rem;
+  }
   .wordmark__motif {
-    display: none;
+    height: 38px;
   }
 }
 
@@ -248,7 +265,7 @@
     letter-spacing: 0.16em;
   }
   .wordmark__motif {
-    width: 28px;
+    height: 40px;
   }
 }
 
@@ -1386,6 +1403,24 @@
 .opening__title {
   margin-top: 0.5rem;
   text-align: center;
+}
+
+/* the official mark settles in as the bells catch gold, just before the name */
+.opening__logo {
+  display: block;
+  width: auto;
+  height: clamp(48px, 7vh, 64px);
+  margin: 0 auto 0.2rem;
+  opacity: 0;
+  transform: translateY(6px);
+  animation: opening-logo 1s var(--ease-out) 2.4s forwards;
+}
+
+@keyframes opening-logo {
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .opening__divider {

@@ -108,8 +108,10 @@ __pycache__/
 # Source files for `npm run images`; the web-ready crops in
 # public/images/opt/ are what the site ships and stay tracked.
 # Keep the originals in shared storage (or Git LFS) instead.
+# The official logo is small and is the source of every brand asset, so it stays tracked.
 # ==============================
-images/images/
+images/images/*
+!images/images/logo/
 
 .env.example/
 vite.config.ts/

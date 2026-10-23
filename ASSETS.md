@@ -69,12 +69,25 @@ the material supplied).
 
 `image: null` renders a framed, labelled placeholder; a missing file falls back to the same placeholder.
 
-## Official logo — still needed
+## Official logo
 
-No logo file was found in the supplied folders. The header, footer and favicon use a **temporary
-typographic wordmark** (`src/components/ornaments/Wordmark.tsx`, `public/favicon.svg`). To use the
-official logo: place an SVG (preferred) or a 512 px+ transparent PNG in `public/`, render it in
-`Wordmark` in place of `WordmarkMotif`, and replace `favicon.svg`. Keep its proportions and clear space.
+Source: `images/images/logo/1000417897-removebg-preview.png` (500 × 500, transparent) — a gold dancer
+figure with the Kannada name ಸಹಚೇತನ in white beneath it. This one file is tracked in git; every brand
+asset is generated from it by `npm run images` (`build_brand` in `scripts/optimize-images.py`). The logo is
+never recoloured, redrawn or stretched.
+
+| Output | What it is | Used for |
+|---|---|---|
+| `public/images/brand/logo-mark.webp` / `.png` | Figure only, cropped above the white lettering (invisible on ivory) | Header, footer, admin page, opening animation (`Wordmark`, `LogoMark`) |
+| `public/images/brand/logo-full.png` | Figure + Kannada lettering | Dark backgrounds only (share card) |
+| `public/favicon.ico`, `favicon-32.png` | Gold mark on a maroon square | Browser tab |
+| `public/apple-touch-icon.png`, `icon-192.png`, `icon-512.png` + `site.webmanifest` | Same, larger | Phone home screen, bookmarks |
+| `public/og-image.jpg` | 1200 × 630: full logo and name on maroon beside the hero photograph | Link previews (WhatsApp, Facebook, etc.) |
+
+**Please supply a higher-resolution or vector (SVG) logo.** The file supplied is a 500 px background-removal
+preview; the figure itself is only ~204 × 387 px, which is fine at header and icon sizes but limits print
+and large uses. Drop the new file in `images/images/logo/`, update `LOGO` (and `LOGO_MARK_BOTTOM` if the
+proportions differ) in the script, and run `npm run images`.
 
 ## Illustration
 
@@ -94,4 +107,4 @@ All take their colours from theme tokens (`--ornament`, `--bell-fill-1/2/3`), so
 - `Divider` — rosette and gejje variants.
 - `Adavu` — **new**: `AdavuFoot`, a single-line drawing of a foot struck flat (tattadavu) with its anklet,
   which draws itself in when scrolled into view; `ArchiveLabel`, the small catalogue card used beside photographs.
-- `Wordmark` — temporary, see above.
+- `Wordmark` / `LogoMark` — the official logo mark beside the typeset name (see "Official logo" above).

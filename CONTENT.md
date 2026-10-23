@@ -91,7 +91,7 @@ not shown as a current schedule.
 
 ## Remaining placeholders
 
-Official logo · contact email, phones, WhatsApp, social links · Chetan S. portrait and biography ·
+High-resolution or SVG logo (current file is a 500 px preview) · contact email, phones, WhatsApp, social links · Chetan S. portrait and biography ·
 award organisations, citations and certificate photographs · press clippings · photographs for
 Patyadarshini, Ajita Shri Puraskara and cultural programmes · deployed domain for `sitemap.xml`,
 `robots.txt` and `SITE.url` · EmailJS credentials (`.env`).

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { LINE_ART_ANKLETS } from '../../data/images';
 import { prefersReducedMotion } from '../../lib/hooks';
 import { Divider } from '../ornaments/Divider';
+import { LogoMark } from '../ornaments/Wordmark';
 
 const SEEN_KEY = 'sn-intro-seen';
 const DURATION = 4700; // ms until the sketch hands over to the hero
@@ -82,6 +83,7 @@ export function OpeningSketch({ onDone }: { onDone: () => void }) {
         </div>
 
         <div className="opening__title">
+          <LogoMark height={64} className="opening__logo" />
           <Divider variant="gejje" className="opening__divider" />
           <p className="opening__name">
             <span>Sahachetana</span> <span>Natyalaya (R.)</span>

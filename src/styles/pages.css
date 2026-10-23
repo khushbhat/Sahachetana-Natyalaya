@@ -322,21 +322,21 @@
   stroke-width: 0.6;
 }
 
-.reveal:not(.is-visible) .adavu__line {
+.reveal:not([data-revealed]) .adavu__line {
   stroke-dashoffset: 1;
 }
 
-.reveal.is-visible .adavu__line {
+.reveal[data-revealed] .adavu__line {
   animation: adavu-draw 2.2s var(--ease-in-out) 0.3s both;
 }
 
-.reveal:not(.is-visible) .adavu__bells,
-.reveal:not(.is-visible) .adavu__strike {
+.reveal:not([data-revealed]) .adavu__bells,
+.reveal:not([data-revealed]) .adavu__strike {
   opacity: 0;
 }
 
-.reveal.is-visible .adavu__bells,
-.reveal.is-visible .adavu__strike {
+.reveal[data-revealed] .adavu__bells,
+.reveal[data-revealed] .adavu__strike {
   animation: adavu-fade 0.8s var(--ease-out) 2.1s both;
 }
 

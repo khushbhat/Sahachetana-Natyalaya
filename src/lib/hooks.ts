@@ -105,29 +105,37 @@ export function useDialog(open: boolean, onClose: () => void, ref: RefObject<HTM
 
 /* ---------------- Scroll reveal ---------------- */
 /**
- * Adds .is-visible to every .reveal element once it enters the viewport,
+ * Marks every .reveal element with `data-revealed` once it enters the viewport,
  * including elements rendered later (tab switches, filters, route changes).
+ *
+ * The revealed state lives in a data attribute rather than a class: React owns
+ * `className`, so a class added here would be wiped the next time React
+ * re-renders that element (e.g. a hover state), hiding it again.
  */
 export function useRevealOnScroll() {
   useLayoutEffect(() => {
     const instant = !('IntersectionObserver' in window) || prefersReducedMotion();
+    const reveal = (el: Element) => el.setAttribute('data-revealed', '');
     const io = instant
       ? null
       : new IntersectionObserver(
           (entries) =>
             entries.forEach((e) => {
               if (e.isIntersecting) {
-                e.target.classList.add('is-visible');
+                reveal(e.target);
                 io?.unobserve(e.target);
               }
             }),
           { rootMargin: '0px 0px -8% 0px', threshold: 0.08 },
         );
+    // Tracked per effect run, so a remount (StrictMode, HMR) observes everything again
+    const seen = new WeakSet<Element>();
     const scan = () =>
-      document.querySelectorAll<HTMLElement>('.reveal:not(.is-visible):not([data-reveal])').forEach((el) => {
-        el.dataset.reveal = '';
+      document.querySelectorAll<HTMLElement>('.reveal:not([data-revealed])').forEach((el) => {
+        if (seen.has(el)) return;
+        seen.add(el);
         if (io) io.observe(el);
-        else el.classList.add('is-visible');
+        else reveal(el);
       });
     scan();
     let raf = 0;

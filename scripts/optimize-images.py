@@ -3,18 +3,26 @@ Builds web-ready images from the full-resolution originals in /images.
 
   python scripts/optimize-images.py
 
-Outputs responsive WebP files (+ one JPEG fallback) to public/images/opt/
-and the transparent anklet line-art mask to public/images/illustrations/.
+Outputs responsive WebP files (+ one JPEG fallback) to public/images/opt/,
+the transparent anklet line-art mask to public/images/illustrations/, and the
+logo, browser icons and social-share card to public/images/brand/ and public/.
 Edit CROPS to add a photograph or change a crop (box = left, top, right,
 bottom as fractions of the original image).
 """
 from pathlib import Path
-from PIL import Image, ImageOps, ImageFilter
+from PIL import Image, ImageDraw, ImageFont, ImageOps, ImageFilter
 
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "images"
 OUT = ROOT / "public" / "images" / "opt"
 ILL = ROOT / "public" / "images" / "illustrations"
+BRAND = ROOT / "public" / "images" / "brand"
+
+# Official logo: gold dancer figure with the Kannada name in white beneath it.
+LOGO = SRC / "images" / "logo" / "1000417897-removebg-preview.png"
+LOGO_MARK_BOTTOM = 419  # last row of the figure and its ellipse base; the white lettering starts below
+MAROON = (72, 28, 38)
+IVORY = (245, 235, 221)
 WIDTHS = [480, 800, 1200, 1600]
 
 CROPS = {
@@ -92,13 +100,81 @@ def build_lineart():
     out = Image.new("LA", im.size, 255)
     out.putalpha(a)
     out.save(ILL / "anklets-lineart.png", optimize=True)
-    # Open Graph image: performance photograph, 1200x630
+
+
+def _fit(im, box_w, box_h):
+    """Scale an RGBA image to fit a box, keeping its proportions."""
+    s = min(box_w / im.width, box_h / im.height)
+    return im.resize((max(1, round(im.width * s)), max(1, round(im.height * s))), Image.LANCZOS)
+
+
+def _icon(mark, size, pad=0.14):
+    """The gold mark centred on a maroon square — legible on light and dark browser tabs."""
+    bg = Image.new("RGBA", (size, size), MAROON + (255,))
+    m = _fit(mark, size * (1 - 2 * pad), size * (1 - 2 * pad))
+    bg.alpha_composite(m, ((size - m.width) // 2, (size - m.height) // 2))
+    return bg
+
+
+def _font(names, size):
+    for n in names:
+        try:
+            return ImageFont.truetype(n, size)
+        except OSError:
+            continue
+    return None
+
+
+def build_brand():
+    """Logo files, browser icons and the social-share card, all from the official logo."""
+    if not LOGO.exists():
+        print("logo not found, skipping brand assets:", LOGO)
+        return
+    BRAND.mkdir(parents=True, exist_ok=True)
+    logo = Image.open(LOGO).convert("RGBA")
+    full = logo.crop(logo.getbbox())  # figure + white Kannada lettering — for dark backgrounds
+    mark = logo.crop((0, 0, logo.width, LOGO_MARK_BOTTOM))
+    mark = mark.crop(mark.getbbox())  # figure only — for light backgrounds
+    full.save(BRAND / "logo-full.png", optimize=True)
+    mark.save(BRAND / "logo-mark.png", optimize=True)
+    mark.save(BRAND / "logo-mark.webp", quality=90, method=6)
+    print("logo-mark", mark.size, "aspect", round(mark.width / mark.height, 4), "| logo-full", full.size)
+
+    pub = ROOT / "public"
+    _icon(mark, 512).save(pub / "icon-512.png", optimize=True)
+    _icon(mark, 192).save(pub / "icon-192.png", optimize=True)
+    _icon(mark, 180, pad=0.12).convert("RGB").save(pub / "apple-touch-icon.png", optimize=True)
+    _icon(mark, 32, pad=0.06).save(pub / "favicon-32.png", optimize=True)
+    _icon(mark, 64, pad=0.06).save(pub / "favicon.ico", sizes=[(16, 16), (32, 32), (48, 48), (64, 64)])
+
+    # Social-share card (1200x630): the logo and name on maroon beside the hero photograph
+    card = Image.new("RGBA", (1200, 630), MAROON + (255,))
     hero = ImageOps.exif_transpose(Image.open(SRC / "hero.JPG")).convert("RGB")
     w, h = hero.size
-    og = hero.crop((int(0.05 * w), int(0.12 * h), int(0.95 * w), int(0.12 * h + 0.9 * w * 630 / 1200)))
-    og.resize((1200, 630), Image.LANCZOS).save(ROOT / "public" / "og-image.jpg", quality=82, optimize=True)
+    ph_w = 560
+    box_w = round(h * ph_w / 630)
+    left = max(0, min(w - box_w, round(0.47 * w - box_w / 2)))
+    photo = hero.crop((left, 0, left + box_w, h)).resize((ph_w, 630), Image.LANCZOS)
+    card.paste(photo, (1200 - ph_w, 0))
+    d = ImageDraw.Draw(card)
+    d.line([(1200 - ph_w - 1, 0), (1200 - ph_w - 1, 630)], fill=(181, 138, 69), width=2)
+    panel_w = 1200 - ph_w
+    lg = _fit(full, panel_w * 0.5, 300)
+    card.alpha_composite(lg, ((panel_w - lg.width) // 2, 48))
+    fonts = ["GARA.TTF", "C:/Windows/Fonts/GARA.TTF", "Cormorant-Regular.ttf", "georgia.ttf", "DejaVuSerif.ttf"]
+    serif, sub, small = _font(fonts, 50), _font(fonts, 36), _font(fonts, 24)
+    if serif and sub and small:
+        for text, font, y, fill in [
+            ("SAHACHETANA", serif, 392, IVORY),
+            ("NATYALAYA (R.)", sub, 452, IVORY),
+            ("Bharatanatyam · Shivamogga", small, 530, (215, 183, 122)),
+        ]:
+            tw = d.textlength(text, font=font)
+            d.text(((panel_w - tw) / 2, y), text, font=font, fill=fill)
+    card.convert("RGB").save(pub / "og-image.jpg", quality=86, optimize=True)
 
 
 if __name__ == "__main__":
     build_photos()
     build_lineart()
+    build_brand()
