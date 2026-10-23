@@ -9,7 +9,7 @@ maroon frame well. The site is composed like a printed festival programme that h
 - **Photographs lead.** Every former stock-like slot (stat tiles, icon cards, placeholder posters)
   was replaced either by a real photograph or by typography. Large panoramas sit beside small
   catalogue labels (`ArchiveLabel`: *Pl. 1 · Natyaaradhana 15 · Kuvempu Rangamandira*).
-- **Varied compositions, one system.** The arched hero; a full-width panorama with a ruled caption;
+- **Varied compositions, one system.** The arched hero (the original performance photograph); a full-width panorama with a ruled caption;
   a monograph-style founders spread; a maroon "work" index whose photograph changes as you
   hover or focus each line; a festival record with dates, venue and three numbered days; and an
   irregular memory wall. No two consecutive sections share a layout.

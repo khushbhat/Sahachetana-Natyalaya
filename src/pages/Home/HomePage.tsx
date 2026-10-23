@@ -113,7 +113,7 @@ export function HomePage() {
           <div className="hero__visual">
             <Stellate size={640} className="hero__stellate" />
             <ArchFrame pillars ratio={1.32} className="hero__arch">
-              <Media image={photos.n15ArmsRaised} eager sizes="(min-width: 1024px) 34vw, 80vw" />
+              <Media image={photos.heroDancer} eager sizes="(min-width: 1024px) 34vw, 80vw" />
             </ArchFrame>
             <div className="hero__bells" aria-hidden="true">
               <Ghungroo size={16} tilt={-6} />

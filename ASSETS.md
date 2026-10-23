@@ -23,7 +23,8 @@ Sections reference the registry key, so a photo is swapped by changing one line.
 
 | Registry key | Source | Used on |
 |---|---|---|
-| `n15ArmsRaised` | aesthetics/DSC08352 | **Home hero** (inside the arch frame), festival record, gallery |
+| `heroDancer` | images/hero.JPG (portrait crop, camera date 4 Sept 2026) | **Home hero** (inside the arch frame), gallery |
+| `n15ArmsRaised` | aesthetics/DSC08352 | Festival record, gallery |
 | `n15Finale` | aesthetics/DSC08398 (crop) | Home "The academy" panorama, festival record, gallery |
 | `n15AdavuFeet` | aesthetics/DSC08241 (crop) | Home work index (training), Classes header, festival record, gallery |
 | `n15Trio` | aesthetics/DSC08315 | Home work index (performance), festival record, gallery |
@@ -37,7 +38,7 @@ Sections reference the registry key, so a photo is swapped by changing one line.
 | `sahanaPerformance` | performances/0Z6A9394 (crop) | Founders ("On stage" plate), gallery |
 | `bharatiyamGroup` | events/IMG-20260817-WA0115 | Bharatiyam initiative, gallery |
 | `communityGroup`, `communityAudience` | events/FB_IMG_… | Gallery (Community programmes) |
-| `heroDancer`, `classTeam` | images/hero.JPG, images/class-team-photograph.JPG (camera date 4 Sept 2026) | Gallery |
+| `classTeam` | images/class-team-photograph.JPG (camera date 4 Sept 2026) | Gallery |
 | `stageWide`, `gejjeDetail`, `classTeamCrop`, `sahanaPortraitWide` | earlier crops | Registered, not currently placed |
 
 Not used, by choice: audience close-ups (DSC08290/91 — identifiable members of the public),
