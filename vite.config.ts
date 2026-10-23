@@ -4,9 +4,12 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   build: {
-    rollupOptions: {
+    rolldownOptions: {
       output: {
-        manualChunks: { react: ['react', 'react-dom', 'react-router-dom'] },
+        // Keep React and the router in their own long-cached vendor chunk
+        codeSplitting: {
+          groups: [{ name: 'react', test: /node_modules[\\/](react|react-dom|react-router|react-router-dom|scheduler)[\\/]/ }],
+        },
       },
     },
   },
